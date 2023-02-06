@@ -46,6 +46,7 @@ import SearchScreen from '../search';
 import {selectUnitType} from '../../redux/selectors/settings';
 import {UNIT_METRIC} from '../../redux/reducers/unit';
 import CurrentDayDetails from '../../components/currentDayDetails';
+import Button from '../../components/button';
 
 export type MainStackParamList = {
   Main: undefined;
@@ -88,6 +89,26 @@ function MainScreen({navigation}: Props) {
     dispatch(fetchWeatherData({location: 'Belgrade'}));
     dispatch(setCurrentLocation({id: 1, name: 'Belgrade'}));
   }, [dispatch]);
+
+  const onFetchPress = () => {
+    // http://10.0.2.2:[your port]/
+    // const res = await
+    fetch('http://10.0.2.2:3000/')
+      .then(res => {
+        res.json().then((r)=>{
+          console.log({r});
+
+        });
+        // console.log({res: JSON.stringify(res)});
+      })
+      .catch(e => {
+        console.log({e});
+      });
+  };
+
+  const renderFetchButton = () => {
+    return <Button text={'Fetch from back'} onPress={onFetchPress} />;
+  };
 
   const renderLoadingScreen = () => {
     return (
@@ -406,6 +427,7 @@ function MainScreen({navigation}: Props) {
   return (
     <ScreenWrapper navigation={navigation}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        {renderFetchButton()}
         {!isWeatherInitializing && renderWeather()}
         {!isWeatherInitializing && renderLineChart()}
         <View style={{padding: 16}}>

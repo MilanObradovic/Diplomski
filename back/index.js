@@ -1,12 +1,9 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { mongoDB } = require('./mongoDB');
-// const {
-//     mongoose
-// } = require('./db/mongoose');
+const { mongoose } = require('./mongoose');
 
 const app = express()
-const { Users } = require('./models/Users')
+const { User } = require('./models/index')
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
@@ -27,12 +24,12 @@ app.use(function (req, res, next) {
 
 app.get("/", (req, res)=>{
     console.log('backend: Dobijen zahtev na "/api"');
-    res.send({message: 'very good'})
-    let user;
-    Users.find().then((users) => {
-        user = users.filter((user) => user.username === "admin");
-        console.log({user})
-        res.send(user)
+    console.log({User})
+    User.find({'username': 'admin'}).then((users) => {
+        console.log({users})
+        res.send(users)
+    }).catch((reason)=>{
+        res.send(reason)
     })
 })
 app.listen(3000, () => {

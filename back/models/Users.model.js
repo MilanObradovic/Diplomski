@@ -16,6 +16,16 @@ const UserSchema = new mongoose.Schema({
     },
 }, {collection: 'Users'});
 
-const Users = mongoose.model('Users', UserSchema);
+// type Plant = {
+//     _id: BSON.ObjectId;
+//     _partition: string;
+//     name: string;
+//     sunlight?: string;
+//     color?: string;
+//     type?: string;
+// };
 
-module.exports = { Users };
+
+const User = new mongoose.model('User', UserSchema);
+
+module.exports = { User };
