@@ -58,9 +58,9 @@ type Props = StackScreenProps<MainStackParamList, 'Main'>;
 
 function MainScreen({navigation}: Props) {
   const bottomSheetRef = useRef(null);
-  // const a = useSelector(state => {
-  //   console.log(state?.bookmark?.locations);
-  // });
+  const a = useSelector(state => {
+    // console.log(state?.bookmark?.locations);
+  });
   const [selectedDayCard, setSelectedDayCard] = useState<number>(0);
 
   const unitType = useSelector(selectUnitType);

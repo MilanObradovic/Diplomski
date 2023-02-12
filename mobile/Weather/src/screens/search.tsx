@@ -27,7 +27,6 @@ function SearchScreen() {
   const loading = useSelector(selectSearchLocationsLoadingStatus);
 
   const onTextChange = e => {
-    console.log('ovde');
     setSearchInput(e.nativeEvent.text);
     debouncedSearch(e.nativeEvent.text);
   };
@@ -38,6 +37,7 @@ function SearchScreen() {
   );
 
   const renderSearchResults = ({item}) => {
+      // console.log({item: item.weatherUrl[0]})
     const locationName = `${item.areaName[0].value}, ${item.country[0].value}`;
     return (
       <SearchItem
@@ -77,6 +77,10 @@ function SearchScreen() {
     );
   };
 
+  const extractKey = (item) => {
+    return item?.areaName[0]?.value;
+  };
+
   return (
     <View style={{backgroundColor: theme.backgroundColor}}>
       <View style={{flexDirection: 'row', paddingBottom: 16}}>
@@ -107,6 +111,7 @@ function SearchScreen() {
           }
           data={searchLocations}
           renderItem={renderSearchResults}
+          keyExtractor={extractKey}
         />
       )}
       {renderBookmarkSection()}
