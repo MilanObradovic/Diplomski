@@ -1,16 +1,24 @@
 import {NavigationContainer} from '@react-navigation/native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+} from '@react-navigation/drawer';
 import React, {useContext} from 'react';
 import MainScreen from './screens/main';
 import SettingsScreen from './screens/settings';
 import {AppThemeContext} from './context/theme';
 import {createStackNavigator} from '@react-navigation/stack';
 import SearchScreen from './screens/search';
-import {TouchableOpacity, View} from 'react-native';
+import {Alert} from 'react-native';
 
-import {faSadTear} from '@fortawesome/free-regular-svg-icons';
-import {faSearch} from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {LoginScreen} from './screens/login';
+import {RegistrationScreen} from './screens/registration';
+import {useSelector} from 'react-redux';
+import {selectIsUserLoggedIn, selectUser} from './redux/selectors/user';
+import {logout} from './redux/reducers/user';
+import {useAppDispatch} from './hooks/useAppDispatch';
 
 const Drawer = createDrawerNavigator();
 
@@ -21,13 +29,24 @@ const Navigation = () => {
   const headerStyle = {
     backgroundColor,
   };
+  const dispatch = useAppDispatch();
+
+  const userData = useSelector(selectUser);
+  const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
+
   const mainStackNavigator = () => (
     <Stack.Navigator>
       <Stack.Group screenOptions={{headerShown: false}}>
         <Stack.Screen name={'Main'} component={MainScreen} />
-      </Stack.Group>
-      <Stack.Group screenOptions={{headerShown: false}}>
         <Stack.Screen name={'Search'} component={SearchScreen} />
+      </Stack.Group>
+    </Stack.Navigator>
+  );
+  const AuthStack = () => (
+    <Stack.Navigator>
+      <Stack.Group screenOptions={{headerShown: false}}>
+        <Stack.Screen name={'Log in'} component={LoginScreen} />
+        <Stack.Screen name={'Sign up'} component={RegistrationScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );
@@ -42,27 +61,57 @@ const Navigation = () => {
             backgroundColor: backgroundColor,
           },
           headerTintColor: primary,
+        }}
+        drawerContent={props => {
+          return (
+            <DrawerContentScrollView {...props}>
+              <DrawerItemList {...props} />
+              {isUserLoggedIn && (
+                <DrawerItem
+                  inactiveTintColor={theme.danger}
+                  label="Logout"
+                  onPress={() => {
+                    Alert.alert(
+                      `Are you sure you want to log out, ${userData?.username}?`,
+                      '',
+                      [
+                        {
+                          text: 'Yes',
+                          onPress: () => {
+                            props.navigation.navigate('Log in');
+                            dispatch(logout());
+                          },
+                        },
+                        {text: 'Cancel', style: 'cancel'},
+                      ],
+                    );
+                  }}
+                />
+              )}
+            </DrawerContentScrollView>
+          );
         }}>
         <Drawer.Screen
           options={{
             headerStyle,
-            // headerRight: () => (
-            //   <TouchableOpacity
-            //     onPress={() => {
-            //       console.log('otvori search screen');
-            //     }}>
-            //     <FontAwesomeIcon
-            //       color={primary}
-            //       icon={faSearch}
-            //       style={{marginRight: 16}}
-            //     />
-            //   </TouchableOpacity>
-            // ),
           }}
-          name={'WeatherApp'}
+          name={'Home'}
           component={mainStackNavigator}
         />
         <Drawer.Screen name={'Settings'} component={SettingsScreen} />
+        {/*//if logged out, show Log in button that navigates to login screen*/}
+        {!isUserLoggedIn && (
+          <Drawer.Screen
+            options={{
+              headerStyle,
+            }}
+            name={'Log in'}
+            component={AuthStack}
+          />
+        )}
+        {/*{!isUserLoggedIn && (*/}
+        {/*  <Drawer.Screen name={'Sign up'} component={RegistrationScreen} />*/}
+        {/*)}*/}
       </Drawer.Navigator>
     </NavigationContainer>
   );

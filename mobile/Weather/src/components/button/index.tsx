@@ -49,7 +49,14 @@ const Button = ({
     <TouchableOpacity
       onPress={onPress}
       style={[calculatedStyles, styles.container]}>
-      <Text style={{color: customTextColor, fontWeight: 'bold'}}>{text}</Text>
+      <Text
+        style={{
+          color: customTextColor,
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}>
+        {text}
+      </Text>
     </TouchableOpacity>
   );
 };

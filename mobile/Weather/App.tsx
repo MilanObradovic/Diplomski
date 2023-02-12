@@ -18,14 +18,15 @@ import {
 } from 'redux-persist';
 import {PersistGate} from 'redux-persist/integration/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {LogBox} from 'react-native';
+LogBox.ignoreAllLogs(true);
 // const composeEnhancers =
 //   global.window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const persistConfig = {
   key: 'root',
   version: 1,
-  whitelist: ['settings', 'bookmark'],
+  whitelist: ['settings', 'bookmark', 'user'],
   storage: AsyncStorage,
 };
 

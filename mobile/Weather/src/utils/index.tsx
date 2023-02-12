@@ -5,6 +5,33 @@ import {Hourly, WeatherDescription} from '../types';
 import LottieView from 'lottie-react-native';
 import React from 'react';
 
+export async function post(url = '', data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data), // body data type must match "Content-Type" header
+  });
+  const result = await response.json();
+  return {data: result, status: response.status}; // parses JSON response into native JavaScript objects
+}
+
+export async function get(url = '', data = {}) {
+  // Default options are marked with *
+  const response = await fetch(url, {
+    method: 'GET', // *GET, POST, PUT, DELETE, etc.
+    mode: 'cors', // no-cors, *cors, same-origin
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const result = await response.json();
+  return {data: result, status: response.status};
+}
+
 export const isiOSPlatform = () => (Platform.OS = 'ios');
 
 export const getHourCopyFromMilitaryCopy = (militaryCopy: string): string => {

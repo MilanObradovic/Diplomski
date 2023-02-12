@@ -1,17 +1,22 @@
 // Connection URI
-const uri = "mongodb+srv://milansd61:sifrazadb@weather.defnhzb.mongodb.net/WeatherDB?retryWrites=true&w=majority";
+const databaseURI = "mongodb+srv://milansd61:sifrazadb@weather.defnhzb.mongodb.net/WeatherDB?retryWrites=true&w=majority";
 
 const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
-mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
-    console.log('jeeej');
+mongoose.set('strictQuery', false);
+console.clear()
+mongoose.connect(databaseURI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+    console.group('Database');
+    console.log('Successfully connected to the database');
+    console.groupEnd()
+
 }).catch(() => {
-    console.log('neeee')
+    console.group('Database');
+    console.log('Error while trying to connect to database')
+    console.groupEnd()
 });
 
-// mongoose.set('useCreateIndex', true);
-// mongoose.set('strictQuery', true);
 
 module.exports = {
     mongoose

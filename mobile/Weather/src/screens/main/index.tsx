@@ -25,10 +25,12 @@ import {
 import {RootReducerType} from '../../redux/reducers';
 import DayCard from '../../components/dayCard';
 import {
+  get,
   getHourCopyFromMilitaryCopy,
   getInitialScrollHourIndex,
   getRGBFromHex,
   getWeatherIconFromDescription,
+  post,
 } from '../../utils';
 import {LineChart} from 'react-native-chart-kit';
 import {LineChartData} from 'react-native-chart-kit/dist/line-chart/LineChart';
@@ -47,6 +49,7 @@ import {selectUnitType} from '../../redux/selectors/settings';
 import {UNIT_METRIC} from '../../redux/reducers/unit';
 import CurrentDayDetails from '../../components/currentDayDetails';
 import Button from '../../components/button';
+import {registerUser} from '../../redux/modules/user';
 
 export type MainStackParamList = {
   Main: undefined;
@@ -55,9 +58,9 @@ type Props = StackScreenProps<MainStackParamList, 'Main'>;
 
 function MainScreen({navigation}: Props) {
   const bottomSheetRef = useRef(null);
-  const a = useSelector(state => {
-    console.log(state?.bookmark?.locations);
-  });
+  // const a = useSelector(state => {
+  //   console.log(state?.bookmark?.locations);
+  // });
   const [selectedDayCard, setSelectedDayCard] = useState<number>(0);
 
   const unitType = useSelector(selectUnitType);
@@ -91,19 +94,7 @@ function MainScreen({navigation}: Props) {
   }, [dispatch]);
 
   const onFetchPress = () => {
-    // http://10.0.2.2:[your port]/
-    // const res = await
-    fetch('http://10.0.2.2:3000/')
-      .then(res => {
-        res.json().then((r)=>{
-          console.log({r});
-
-        });
-        // console.log({res: JSON.stringify(res)});
-      })
-      .catch(e => {
-        console.log({e});
-      });
+    dispatch(registerUser({username: 'mickoopet1', password: 'micko123'}));
   };
 
   const renderFetchButton = () => {
@@ -427,7 +418,7 @@ function MainScreen({navigation}: Props) {
   return (
     <ScreenWrapper navigation={navigation}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {renderFetchButton()}
+        {/*{renderFetchButton()}*/}
         {!isWeatherInitializing && renderWeather()}
         {!isWeatherInitializing && renderLineChart()}
         <View style={{padding: 16}}>

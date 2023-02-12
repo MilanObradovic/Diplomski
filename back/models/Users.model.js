@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 // const mongoose = require('mongoose').set('debug', true);
 
 const UserSchema = new mongoose.Schema({
-    _id: {
-        type: String,
-        trim: true,
-    },
     username: {
         type: String,
         trim: true,
@@ -14,17 +10,19 @@ const UserSchema = new mongoose.Schema({
         type: String,
         trim: true,
     },
+    role: {
+        type: String,
+        default: "user",
+    },
+    isDisabled: {
+        type: Boolean,
+        default: false,
+    },
+    dateCreated: {
+        type: Date,
+        default: Date.now
+    }
 }, {collection: 'Users'});
-
-// type Plant = {
-//     _id: BSON.ObjectId;
-//     _partition: string;
-//     name: string;
-//     sunlight?: string;
-//     color?: string;
-//     type?: string;
-// };
-
 
 const User = new mongoose.model('User', UserSchema);
 

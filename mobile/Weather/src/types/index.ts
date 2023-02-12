@@ -172,3 +172,11 @@ export enum LoadingStatuses {
   FetchingMore,
   Refreshing,
 }
+
+export type User = {
+  username: string;
+  password: string;
+  type?: 'admin' | 'user';
+  isDisabled?: boolean;
+  dateCreated: Date;
+};
