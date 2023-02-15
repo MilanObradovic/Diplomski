@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { mongoose } = require('./mongoose');
 
 const app = express()
-const { User } = require('./models/index')
+const { User, Bookmark } = require('./models/index')
 const {ObjectId} = require("mongodb");
 
 // parse application/x-www-form-urlencoded
@@ -77,6 +77,36 @@ app.post('/user', (req, res) => {
     }
 
 })
+
+app.post('/bookmark', (req, res)=>{
+    switch (req.body.action) {
+        case 'create':
+            const newBookmark = req.body.data;
+            Bookmark.create(newBookmark).then((bookmark)=>{
+                res.status(200).send(bookmark);
+            }).catch((e)=>{
+                res.status(400).send(newBookmark);
+                console.log({e})
+            })
+            break;
+        case 'delete':
+            const bookmarkToBeDeleted = req.body.data;
+            Bookmark.findOneAndDelete({username: bookmarkToBeDeleted.username, locationName: bookmarkToBeDeleted.locationName}).then(()=>{
+                res.status(200).send(bookmarkToBeDeleted);
+            }).catch((e)=>{
+                res.status(400).send(bookmarkToBeDeleted);
+            })
+            break;
+        default:
+            break;
+    }
+})
+app.get('/bookmark/:id', (req, res)=>{
+    Bookmark.find({userId: req.params.id}).then((result)=>{
+        res.status(200).send(result)
+    })
+})
+
 app.listen(3000, () => {
     console.group('Node server')
     console.log('Server is listening on port 3000');

@@ -54,14 +54,19 @@ export const getRGBFromHex = (colorHex: string) => {
   )}, ${parseInt(aRgbHex[2], 16)})`;
 };
 
+export const getRGBFromHexWithOpacity = (colorHex: string, opacity: number) => {
+  const aRgbHex = colorHex.slice(1).match(/.{1,2}/g);
+  if (!aRgbHex) {
+    return 'rgb(0, 0, 0)';
+  }
+  return `rgba(${parseInt(aRgbHex[0], 16)}, ${parseInt(
+    aRgbHex[1],
+    16,
+  )}, ${parseInt(aRgbHex[2], 16)}, ${opacity})`;
+};
+
 export const prepareCoordsForApi = (coords: GeoPoint) => {
-  const latPos = Math.abs(coords.latitude);
-  const latDecimal = latPos - Math.floor(latPos);
-  const lonPos = Math.abs(coords.longitude);
-  const lonDecimal = lonPos - Math.floor(lonPos);
-  return `${Math.trunc(coords.latitude)}.${latDecimal},${Math.trunc(
-    coords.longitude,
-  )}.${lonDecimal}}`;
+  return `${coords.latitude},${coords.longitude}`;
 };
 
 export const getWeatherDescriptionForFutureDay = (hourly: Hourly[]): string => {

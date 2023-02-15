@@ -5,7 +5,7 @@ import {
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import MainScreen from './screens/main';
 import SettingsScreen from './screens/settings';
 import {AppThemeContext} from './context/theme';
@@ -19,6 +19,7 @@ import {useSelector} from 'react-redux';
 import {selectIsUserLoggedIn, selectUser} from './redux/selectors/user';
 import {logout} from './redux/reducers/user';
 import {useAppDispatch} from './hooks/useAppDispatch';
+import {fetchBookmarksForUser} from './redux/modules/bookmark';
 
 const Drawer = createDrawerNavigator();
 
@@ -34,7 +35,13 @@ const Navigation = () => {
   const userData = useSelector(selectUser);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
 
-  const mainStackNavigator = () => (
+  useEffect(() => {
+    if (isUserLoggedIn) {
+      dispatch(fetchBookmarksForUser({userId: userData!.username}));
+    }
+  }, []);
+
+  const MainStackNavigator = () => (
     <Stack.Navigator>
       <Stack.Group screenOptions={{headerShown: false}}>
         <Stack.Screen name={'Main'} component={MainScreen} />
@@ -96,7 +103,7 @@ const Navigation = () => {
             headerStyle,
           }}
           name={'Home'}
-          component={mainStackNavigator}
+          component={MainStackNavigator}
         />
         <Drawer.Screen name={'Settings'} component={SettingsScreen} />
         {/*//if logged out, show Log in button that navigates to login screen*/}

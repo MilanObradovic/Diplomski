@@ -52,7 +52,7 @@ export type WeatherDescription =
   | 'Sunny';
 
 export type Location = {
-  name: string;
+  locationName: string;
   id: number;
 };
 
@@ -86,6 +86,16 @@ export interface CurrentCondition {
   FeelsLikeC: number;
   FeelsLikeF: number;
   uvIndex: number;
+  air_quality: {
+    co: number;
+    'gb-defra-index': number;
+    no2: number;
+    o3: number;
+    pm2_5: number;
+    pm10: number;
+    so2: number;
+    'us-epa-index': number;
+  };
 }
 
 export type Hourly = {
@@ -179,4 +189,20 @@ export type User = {
   type?: 'admin' | 'user';
   isDisabled?: boolean;
   dateCreated: Date;
+};
+
+export type Alert = {
+  headline: string;
+  msgtype: string;
+  severity: string;
+  urgency: string;
+  areas: string;
+  category: string;
+  certainty: string;
+  event: string;
+  note: string;
+  effective: string;
+  expires: string;
+  desc: string;
+  instruction: string;
 };

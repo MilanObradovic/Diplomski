@@ -9,7 +9,10 @@ export const selectIsLocationBookmarked = createSelector(
     selectBookmarkedLocations,
     (state: RootReducerType, locationId: number) => locationId,
   ],
-  (bookmarkedLocations, locationId) =>
-    bookmarkedLocations[locationId] !== undefined &&
-    bookmarkedLocations[locationId],
+  (bookmarkedLocations, locationId) => {
+    return (
+      bookmarkedLocations[locationId] !== undefined &&
+      bookmarkedLocations[locationId]
+    );
+  },
 );

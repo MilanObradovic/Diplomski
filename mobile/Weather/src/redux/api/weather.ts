@@ -14,6 +14,12 @@ export const getWeatherData = ({
     ? prepareCoordsForApi(userCoords)
     : location;
   const requestUrl =
-    BASE_WEATHER_URL + `&q=${placeForSearch}` + '&tp=1' + '&nearest_area=true';
+    BASE_WEATHER_URL +
+    `&q=${placeForSearch}` +
+    '&tp=1' +
+    '&nearest_area=true' +
+    '&aqi=yes' +
+    '&showmap=yes' +
+    '&alerts=yes';
   return axios(requestUrl);
 };

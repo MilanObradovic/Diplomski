@@ -37,27 +37,29 @@ function SearchScreen() {
   );
 
   const renderSearchResults = ({item}) => {
-      // console.log({item: item.weatherUrl[0]})
+    // console.log({item: item.weatherUrl[0]})
     const locationName = `${item.areaName[0].value}, ${item.country[0].value}`;
     return (
       <SearchItem
         content={locationName}
         onPress={() => {
           dispatch(fetchWeatherData({location: locationName}));
-          dispatch(setCurrentLocation({id: locationName, name: locationName}));
+          dispatch(setCurrentLocation({id: locationName, locationName}));
         }}
       />
     );
   };
 
   const renderBookmarkedLocations = ({item}) => {
-    const locationName = bookmarkedLocations[item].name;
+    const locationName = bookmarkedLocations[item].locationName;
     return (
       <SearchItem
         content={locationName}
         onPress={() => {
           dispatch(fetchWeatherData({location: locationName}));
-          dispatch(setCurrentLocation({id: locationName, name: locationName}));
+          dispatch(
+            setCurrentLocation({id: locationName, locationName: locationName}),
+          );
         }}
       />
     );
@@ -69,15 +71,21 @@ function SearchScreen() {
         <Text style={{color: theme.textColor, fontWeight: 'bold'}}>
           Favorites
         </Text>
-        <FlatList
-          data={Object.keys(bookmarkedLocations)}
-          renderItem={renderBookmarkedLocations}
-        />
+        {Object.keys(bookmarkedLocations).length !== 0 ? (
+          <FlatList
+            data={Object.keys(bookmarkedLocations)}
+            renderItem={renderBookmarkedLocations}
+          />
+        ) : (
+          <Text style={{color: theme.textColor}}>
+            You don't have any favorite locations yet
+          </Text>
+        )}
       </View>
     );
   };
 
-  const extractKey = (item) => {
+  const extractKey = item => {
     return item?.areaName[0]?.value;
   };
 

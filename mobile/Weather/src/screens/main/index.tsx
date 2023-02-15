@@ -25,12 +25,10 @@ import {
 import {RootReducerType} from '../../redux/reducers';
 import DayCard from '../../components/dayCard';
 import {
-  get,
   getHourCopyFromMilitaryCopy,
   getInitialScrollHourIndex,
   getRGBFromHex,
   getWeatherIconFromDescription,
-  post,
 } from '../../utils';
 import {LineChart} from 'react-native-chart-kit';
 import {LineChartData} from 'react-native-chart-kit/dist/line-chart/LineChart';
@@ -40,7 +38,10 @@ import {faSearch, faStar} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {selectCurrentLocation} from '../../redux/selectors/currentLocation';
 import {setCurrentLocation} from '../../redux/reducers/currentLocation';
-import {addBookmark, removeBookmark} from '../../redux/reducers/bookmark';
+import {
+  addBookmarkLocally,
+  removeBookmarkLocally,
+} from '../../redux/reducers/bookmark';
 import {selectIsLocationBookmarked} from '../../redux/selectors/bookmark';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Modalize} from 'react-native-modalize';
@@ -48,8 +49,11 @@ import SearchScreen from '../search';
 import {selectUnitType} from '../../redux/selectors/settings';
 import {UNIT_METRIC} from '../../redux/reducers/unit';
 import CurrentDayDetails from '../../components/currentDayDetails';
-import Button from '../../components/button';
-import {registerUser} from '../../redux/modules/user';
+import {removeBookmark, saveBookmark} from '../../redux/modules/bookmark';
+import {selectUser, selectIsUserLoggedIn} from '../../redux/selectors/user';
+import AirQuality from '../../components/airQuilitySection';
+import {AlertComponent} from '../../components/alert';
+import {Alert} from '../../types';
 
 export type MainStackParamList = {
   Main: undefined;
@@ -58,13 +62,15 @@ type Props = StackScreenProps<MainStackParamList, 'Main'>;
 
 function MainScreen({navigation}: Props) {
   const bottomSheetRef = useRef(null);
-  const a = useSelector(state => {
-    // console.log(state?.bookmark?.locations);
-  });
+  const alertBottomSheetRef = useRef(null);
   const [selectedDayCard, setSelectedDayCard] = useState<number>(0);
+  const [openedAlert, setOpenedAlert] = useState<Alert | null>();
 
   const unitType = useSelector(selectUnitType);
   const {theme} = useContext(AppThemeContext);
+
+  const user = useSelector(selectUser);
+  const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
 
   const isWeatherInitializing = useSelector(selectIsWeatherInitializing);
   const currentTemperature = useSelector((state: RootReducerType) =>
@@ -89,17 +95,17 @@ function MainScreen({navigation}: Props) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchWeatherData({location: 'Belgrade'}));
-    dispatch(setCurrentLocation({id: 1, name: 'Belgrade'}));
+    dispatch(
+      fetchWeatherData({
+        location: 'Pecos, United States of America',
+        // userCoords: {
+        //   latitude: 44.08,
+        //   longitude: 20.03,
+        // },
+      }),
+    );
+    dispatch(setCurrentLocation({id: 'Belgrade', locationName: 'Belgrade'}));
   }, [dispatch]);
-
-  const onFetchPress = () => {
-    dispatch(registerUser({username: 'mickoopet1', password: 'micko123'}));
-  };
-
-  const renderFetchButton = () => {
-    return <Button text={'Fetch from back'} onPress={onFetchPress} />;
-  };
 
   const renderLoadingScreen = () => {
     return (
@@ -214,53 +220,79 @@ function MainScreen({navigation}: Props) {
   };
 
   const renderCurrentDayDetails = () => {
-    return <CurrentDayDetails />;
+    return (
+      <View>
+        <CurrentDayDetails />
+        {isUserLoggedIn && <AirQuality />}
+      </View>
+    );
   };
 
   const onBookmarkPress = () => {
     if (isCurrentLocationBookmarked) {
-      dispatch(removeBookmark(currentLocation.id));
+      if (isUserLoggedIn) {
+        dispatch(
+          removeBookmark({
+            userId: user!.username,
+            locationName: currentLocation.locationName,
+          }),
+        );
+      } else {
+        dispatch(removeBookmarkLocally(currentLocation.id));
+      }
     } else {
-      dispatch(addBookmark(currentLocation));
+      if (isUserLoggedIn) {
+        dispatch(
+          saveBookmark({
+            userId: user?.username,
+            locationName: currentLocation.id,
+            q: currentLocation.id,
+          }),
+        );
+      } else {
+        dispatch(addBookmarkLocally(currentLocation));
+      }
     }
   };
 
+  const renderHeader = () => {
+    return (
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}>
+        {/* search icon*/}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={{position: 'absolute', right: 16}}
+          onPress={() => {
+            bottomSheetRef?.current.open();
+          }}>
+          <FontAwesomeIcon color={theme.primary} icon={faSearch} size={20} />
+        </TouchableOpacity>
+        <Text style={{fontSize: theme.fontSize.lg, color: theme.textColor}}>
+          {currentLocation.locationName}
+        </Text>
+        {/*bookmark (star) icon*/}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={{position: 'absolute', left: 16}}
+          onPress={onBookmarkPress}>
+          <FontAwesomeIcon
+            color={'#FFC82F'}
+            icon={isCurrentLocationBookmarked ? faStar : faStarRegular}
+            size={24}
+          />
+        </TouchableOpacity>
+      </View>
+    );
+  };
   const renderWeather = () => {
     getInitialScrollHourIndex();
     return (
-      <View>
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
-          {/* search icon*/}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={{position: 'absolute', right: 16}}
-            onPress={() => {
-              bottomSheetRef?.current.open();
-            }}>
-            <FontAwesomeIcon color={theme.primary} icon={faSearch} size={20} />
-          </TouchableOpacity>
-          <Text style={{fontSize: theme.fontSize.lg, color: theme.textColor}}>
-            {currentLocation.name}
-          </Text>
-          {/*bookmark (star) icon*/}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={{position: 'absolute', left: 16}}
-            onPress={onBookmarkPress}>
-            <FontAwesomeIcon
-              color={'#FFC82F'}
-              icon={isCurrentLocationBookmarked ? faStar : faStarRegular}
-              size={24}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={{paddingHorizontal: 16}}>{renderCurrentCondition()}</View>
-      </View>
+      <View style={{paddingHorizontal: 16}}>{renderCurrentCondition()}</View>
     );
   };
 
@@ -415,10 +447,51 @@ function MainScreen({navigation}: Props) {
     return renderLoadingScreen();
   }
 
+  const renderFullAlert = () => {
+    return (
+      <View>
+        <Text
+          style={{
+            color: theme.textColor,
+            paddingBottom: 8,
+            fontWeight: 'bold',
+          }}>
+          {openedAlert?.headline}
+        </Text>
+        <Text style={{color: theme.textColor, flex: 1}}>
+          {openedAlert?.desc}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderAlertBottomSheet = () => {
+    return (
+      <Modalize
+        ref={alertBottomSheetRef}
+        withHandle
+        modalTopOffset={64}
+        childrenStyle={{paddingHorizontal: 16, paddingVertical: 16}}
+        modalStyle={{backgroundColor: theme.backgroundColor}}
+        adjustToContentHeight
+        snapPoint={Dimensions.get('screen').height / 2}
+        disableScrollIfPossible>
+        {renderFullAlert()}
+      </Modalize>
+    );
+  };
   return (
     <ScreenWrapper navigation={navigation}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        {/*{renderFetchButton()}*/}
+        {!isWeatherInitializing && renderHeader()}
+        {!isWeatherInitializing && (
+          <AlertComponent
+            onAlertPress={item => {
+              alertBottomSheetRef?.current?.open();
+              setOpenedAlert(item);
+            }}
+          />
+        )}
         {!isWeatherInitializing && renderWeather()}
         {!isWeatherInitializing && renderLineChart()}
         <View style={{padding: 16}}>
@@ -428,6 +501,7 @@ function MainScreen({navigation}: Props) {
         {!isWeatherInitializing && renderCurrentDayDetails()}
       </ScrollView>
       {renderSearchInputAndResults()}
+      {renderAlertBottomSheet()}
     </ScreenWrapper>
   );
 }
