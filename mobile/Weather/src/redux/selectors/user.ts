@@ -9,3 +9,6 @@ export const selectLoginErrorMessage = (state: RootReducerType) =>
   state.user.loginErrorMessage;
 export const selectSignupErrorMessage = (state: RootReducerType) =>
   state.user.signupErrorMessage;
+
+export const selectIsLoggedInUserAdmin = (state: RootReducerType) =>
+  state.user.user?.role === 'admin';

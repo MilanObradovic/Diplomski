@@ -1,5 +1,5 @@
 import React, {useContext} from 'react';
-import {Text, View} from 'react-native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import ScreenWrapper from '../components/screenWrapper';
 import {AppThemeContext} from '../context/theme';
 import {ThemedSwitch} from '../components/switch';
@@ -12,6 +12,8 @@ import {selectPressureType, selectUnitType} from '../redux/selectors/settings';
 import {setPressureType} from '../redux/reducers/pressure';
 import {setUnitType} from '../redux/reducers/unit';
 import {useAppDispatch} from '../hooks/useAppDispatch';
+import {faChevronRight} from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 
 function SettingsScreen({navigation}) {
   const {isDarkMode, setDarkMode, theme} = useContext(AppThemeContext);
@@ -25,7 +27,7 @@ function SettingsScreen({navigation}) {
     <ScreenWrapper navigation={navigation}>
       <View style={{flex: 1, backgroundColor, padding: 16}}>
         <View style={{paddingBottom: 8}}>
-          <Text style={{color: textColor, fontSize: fontSize.md}}>UNITS</Text>
+          <Text style={{color: textColor, fontSize: fontSize.md}}>Unites</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -53,7 +55,7 @@ function SettingsScreen({navigation}) {
         <Section />
         <View style={{paddingVertical: 16}}>
           <Text style={{color: textColor, fontSize: fontSize.md}}>
-            PRESSURE UNITS
+            Pressure units
           </Text>
           <View
             style={{
@@ -79,7 +81,6 @@ function SettingsScreen({navigation}) {
           </View>
         </View>
         <Section />
-
         <View
           style={{
             paddingVertical: 8,
@@ -88,7 +89,7 @@ function SettingsScreen({navigation}) {
             justifyContent: 'space-between',
           }}>
           <Text style={{color: textColor, fontSize: fontSize.md}}>
-            DARK MODE
+            Dark mode
           </Text>
           <ThemedSwitch
             value={isDarkMode}
@@ -97,14 +98,36 @@ function SettingsScreen({navigation}) {
             }}
           />
         </View>
-
         <Section />
-
-        <View style={{paddingVertical: 8}}>
-          <Text style={{color: textColor, fontSize: fontSize.md}}>
-            LOCATION ACCESS
+        <Text
+          style={{color: textColor, fontSize: fontSize.md, paddingVertical: 8}}>
+          Location access
+        </Text>
+        <Section />
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate('Change password');
+          }}
+          style={{
+            paddingVertical: 8,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+          }}>
+          <Text
+            style={{
+              color: theme.textColor,
+              fontSize: fontSize.md,
+              paddingVertical: 8,
+            }}>
+            Change password
           </Text>
-        </View>
+          <FontAwesomeIcon
+            color={theme.primary}
+            icon={faChevronRight}
+            size={24}
+          />
+        </TouchableOpacity>
       </View>
     </ScreenWrapper>
   );

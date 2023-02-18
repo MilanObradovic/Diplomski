@@ -9,14 +9,14 @@ interface Props {
 
 export const ThemedSwitch = ({value, onValueChange}: Props) => {
   const {theme} = useContext(AppThemeContext);
-  const {backgroundColor} = theme;
+  const {textColor} = theme;
   return (
     <Switch
       value={value}
       onValueChange={newValue => {
         onValueChange(newValue);
       }}
-      thumbColor={backgroundColor}
+      thumbColor={textColor}
     />
   );
 };

@@ -1,18 +1,22 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {User} from '../../../types';
-import {loginUser, registerUser} from '../../modules/user';
+import {changePassword, loginUser, registerUser} from '../../modules/user';
 import {selectSignuperrorMessage} from '../../selectors/user';
 
 export interface UserReducerType {
   user: User | null;
   loginErrorMessage: string | null;
   signupErrorMessage: string | null;
+  changePasswordStatus: number | null;
+  changePasswordMessage: string | null;
 }
 
 const initialState: UserReducerType = {
   user: null,
   loginErrorMessage: null,
   signupErrorMessage: null,
+  changePasswordStatus: null,
+  changePasswordMessage: null,
 };
 
 const userSlice = createSlice({
@@ -51,6 +55,9 @@ const userSlice = createSlice({
       } else {
         state.loginErrorMessage = data;
       }
+    });
+    builder.addCase(changePassword.fulfilled, (state, action) => {
+      state.changePasswordStatusMessage;
     });
   },
 });

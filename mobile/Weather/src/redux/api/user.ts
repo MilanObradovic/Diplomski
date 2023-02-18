@@ -1,4 +1,4 @@
-import {post} from '../../utils';
+import {get, post} from '../../utils';
 
 export const createUser = (data: {username: string; password: string}) => {
   return post('http://10.0.2.2:3000/user', {
@@ -11,5 +11,37 @@ export const login = (data: {username: string; password: string}) => {
   return post('http://10.0.2.2:3000/user', {
     action: 'login',
     data,
+  });
+};
+
+export const patchPassword = ({
+  username,
+  oldPassword,
+  newPassword,
+}: {
+  username: string;
+  oldPassword: string;
+  newPassword: string;
+}) => {
+  return post('http://10.0.2.2:3000/user', {
+    action: 'changePassword',
+    data: {username, oldPassword, newPassword},
+  });
+};
+
+export const getAllUsers = () => {
+  return get('http://10.0.2.2:3000/user/all');
+};
+
+export const deactivateUser = ({
+  username,
+  isActive,
+}: {
+  username: string;
+  isActive: boolean;
+}) => {
+  return post('http://10.0.2.2:3000/user', {
+    action: 'deactivate',
+    data: {username, isActive},
   });
 };

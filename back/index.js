@@ -22,11 +22,14 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get("/user", (req, res)=>{
-    console.log('backend: Dobijen zahtev na "/api"');
-    console.log({User})
-    User.find({'username': 'admin'}).then((users) => {
-        console.log({users})
+app.use(function (req, res, next) {
+    console.log('middlware')
+    next();
+})
+
+app.get("/user/all", (req, res)=>{
+    User.find({}).then((users) => {
+    // User.find({}).skip(2).limit(2).then((users) => {
         res.send(users)
     }).catch((reason)=>{
         res.send(reason)
@@ -71,6 +74,39 @@ app.post('/user', (req, res) => {
                 }
             }).catch(e => console.log(e));
             break;
+        }
+        case 'changePassword': {
+            let data = req.body.data;
+            let {username, oldPassword, newPassword} = data;
+            User.findOne({username: username}).then((user) => {
+                if (user.password === oldPassword) {
+                    User.findOneAndUpdate({username}, {
+                        password: newPassword
+                    }).then(()=>{
+                        res.status(200).json("Password successfully changed!");
+                    })
+                } else {
+                    res.status(401).json("Old password is not correct! Please enter correct password.");
+                }
+            }).catch(e => console.log(e));
+            break;
+        }
+        case 'deactivate': {
+            let {username, isActive} =  req.body.data;
+            if(!username){
+                res.status(400).json("Username must be specified!")
+            }
+            User.findOne({username: username}).then((user) => {
+                if(user.role === 'admin'){
+                    res.status(400).json("User with admin role can not be deactivated!");
+                }else{
+                    User.findOneAndUpdate({username: username}, {isDisabled: !isActive}).then(() => {
+                        res.status(200).json("User is successfully updated!");
+                    })
+                }
+            }).catch((e)=>{
+                res.status(500).json("Internal server error.");
+            })
         }
         default:
             break;

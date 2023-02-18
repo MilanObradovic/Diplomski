@@ -186,7 +186,7 @@ export enum LoadingStatuses {
 export type User = {
   username: string;
   password: string;
-  type?: 'admin' | 'user';
+  role?: 'admin' | 'user';
   isDisabled?: boolean;
   dateCreated: Date;
 };

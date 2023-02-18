@@ -11,15 +11,21 @@ import SettingsScreen from './screens/settings';
 import {AppThemeContext} from './context/theme';
 import {createStackNavigator} from '@react-navigation/stack';
 import SearchScreen from './screens/search';
-import {Alert} from 'react-native';
+import {Alert, Text} from 'react-native';
 
 import {LoginScreen} from './screens/login';
 import {RegistrationScreen} from './screens/registration';
 import {useSelector} from 'react-redux';
-import {selectIsUserLoggedIn, selectUser} from './redux/selectors/user';
+import {
+  selectIsLoggedInUserAdmin,
+  selectIsUserLoggedIn,
+  selectUser,
+} from './redux/selectors/user';
 import {logout} from './redux/reducers/user';
 import {useAppDispatch} from './hooks/useAppDispatch';
 import {fetchBookmarksForUser} from './redux/modules/bookmark';
+import {ChangePasswordScreen} from './screens/changePassword';
+import {UserDashboardScreen} from "./screens/userDashboard";
 
 const Drawer = createDrawerNavigator();
 
@@ -34,12 +40,14 @@ const Navigation = () => {
 
   const userData = useSelector(selectUser);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
+  const isAdmin = useSelector(selectIsLoggedInUserAdmin);
+  console.log({isAdmin});
 
   useEffect(() => {
     if (isUserLoggedIn) {
       dispatch(fetchBookmarksForUser({userId: userData!.username}));
     }
-  }, []);
+  }, [isUserLoggedIn]);
 
   const MainStackNavigator = () => (
     <Stack.Navigator>
@@ -51,13 +59,34 @@ const Navigation = () => {
   );
   const AuthStack = () => (
     <Stack.Navigator>
-      <Stack.Group screenOptions={{headerShown: false}}>
+      <Stack.Group screenOptions={{headerShown: true}}>
         <Stack.Screen name={'Log in'} component={LoginScreen} />
         <Stack.Screen name={'Sign up'} component={RegistrationScreen} />
       </Stack.Group>
     </Stack.Navigator>
   );
-
+  const AdminStack = () => (
+    <Stack.Navigator>
+      <Stack.Group screenOptions={{headerShown: true}}>
+        <Stack.Screen name={'User dashboard'} component={UserDashboardScreen} />
+        <Stack.Screen
+          name={'Location dashboard'}
+          component={LocationDashboardScreen}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
+  );
+  const SettingsStackNavigator = () => (
+    <Stack.Navigator>
+      <Stack.Group screenOptions={{headerShown: false}}>
+        <Stack.Screen name={'Settings'} component={SettingsScreen} />
+        <Stack.Screen
+          name={'Change password'}
+          component={ChangePasswordScreen}
+        />
+      </Stack.Group>
+    </Stack.Navigator>
+  );
   return (
     <NavigationContainer>
       <Drawer.Navigator
@@ -85,7 +114,9 @@ const Navigation = () => {
                         {
                           text: 'Yes',
                           onPress: () => {
-                            props.navigation.navigate('Log in');
+                            props.navigation.navigate('Auth', {
+                              screen: 'Log in',
+                            });
                             dispatch(logout());
                           },
                         },
@@ -105,19 +136,38 @@ const Navigation = () => {
           name={'Home'}
           component={MainStackNavigator}
         />
-        <Drawer.Screen name={'Settings'} component={SettingsScreen} />
+        <Drawer.Screen
+          name={'SettingsStack'}
+          component={SettingsStackNavigator}
+          options={{
+            headerStyle,
+            title: 'Settings',
+            drawerLabel: 'Settings',
+          }}
+        />
         {/*//if logged out, show Log in button that navigates to login screen*/}
         {!isUserLoggedIn && (
           <Drawer.Screen
             options={{
               headerStyle,
+              title: 'Log in',
+              drawerLabel: 'Log in',
             }}
-            name={'Log in'}
+            name={'Auth'}
             component={AuthStack}
           />
         )}
-        {/*{!isUserLoggedIn && (*/}
-        {/*  <Drawer.Screen name={'Sign up'} component={RegistrationScreen} />*/}
+        {isAdmin && (
+          <Drawer.Screen
+            name={'User dashboard'}
+            component={UserDashboardScreen}
+          />
+        )}
+        {/*{isAdmin && (*/}
+        {/*  <Drawer.Screen*/}
+        {/*    name={'Location dashboard'}*/}
+        {/*    component={LocationDashboardScreen}*/}
+        {/*  />*/}
         {/*)}*/}
       </Drawer.Navigator>
     </NavigationContainer>

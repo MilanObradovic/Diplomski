@@ -1,5 +1,11 @@
 import {User} from '../../types';
-import {createUser, login} from '../api/user';
+import {
+  createUser,
+  deactivateUser,
+  getAllUsers,
+  login,
+  patchPassword,
+} from '../api/user';
 import {createAsyncThunk} from '@reduxjs/toolkit';
 
 export const registerUser = createAsyncThunk<
@@ -18,4 +24,26 @@ export const loginUser = createAsyncThunk<
   // @ts-ignore
   const {data, status} = await login({username, password});
   return {data, status};
+});
+
+export const changePassword = createAsyncThunk<
+  Promise<{data: string | null; status: number}>,
+  {username: string; oldPassword: string; newPassword: string}
+>('user/changePassword', async ({username, oldPassword, newPassword}) => {
+  return patchPassword({username, oldPassword, newPassword});
+});
+
+export const fetchAllUsers = createAsyncThunk<
+  {data: User[]; status: number},
+  undefined
+>('user/fetchAll', async () => {
+  const {data, status} = await getAllUsers();
+  return {data, status};
+});
+
+export const disableUser = createAsyncThunk<
+  {data: string; status: number},
+  {username: string, isActive: boolean}
+>('user/disableUser', async ({username, isActive}) => {
+  return deactivateUser({username, isActive});
 });

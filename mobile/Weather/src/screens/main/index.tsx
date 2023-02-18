@@ -104,7 +104,12 @@ function MainScreen({navigation}: Props) {
         // },
       }),
     );
-    dispatch(setCurrentLocation({id: 'Belgrade', locationName: 'Belgrade'}));
+    dispatch(
+      setCurrentLocation({
+        id: 'Pecos, United States of America',
+        locationName: 'Pecos, United States of America',
+      }),
+    );
   }, [dispatch]);
 
   const renderLoadingScreen = () => {
@@ -259,7 +264,6 @@ function MainScreen({navigation}: Props) {
     return (
       <View
         style={{
-          alignItems: 'center',
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
@@ -272,7 +276,13 @@ function MainScreen({navigation}: Props) {
           }}>
           <FontAwesomeIcon color={theme.primary} icon={faSearch} size={20} />
         </TouchableOpacity>
-        <Text style={{fontSize: theme.fontSize.lg, color: theme.textColor}}>
+        <Text
+          style={{
+            fontSize: theme.fontSize.lg,
+            color: theme.textColor,
+            paddingHorizontal: 50,
+            textAlign: 'center',
+          }}>
           {currentLocation.locationName}
         </Text>
         {/*bookmark (star) icon*/}
@@ -447,6 +457,24 @@ function MainScreen({navigation}: Props) {
     return renderLoadingScreen();
   }
 
+  const renderFullAlertProperty = (
+    title: string,
+    value: string | undefined,
+  ) => {
+    if (!value) {
+      return null;
+    }
+    return (
+      <View style={{marginBottom: 8}}>
+        <Text style={{color: theme.textColor}}>
+          <Text style={{fontWeight: 'bold', fontSize: theme.fontSize.md}}>
+            {title}:{'\n'}
+          </Text>
+          <Text>{value}</Text>
+        </Text>
+      </View>
+    );
+  };
   const renderFullAlert = () => {
     return (
       <View>
@@ -455,12 +483,20 @@ function MainScreen({navigation}: Props) {
             color: theme.textColor,
             paddingBottom: 8,
             fontWeight: 'bold',
+            fontSize: theme.fontSize.lg,
           }}>
           {openedAlert?.headline}
         </Text>
-        <Text style={{color: theme.textColor, flex: 1}}>
-          {openedAlert?.desc}
-        </Text>
+        {renderFullAlertProperty('Instructions', openedAlert?.instruction)}
+        {renderFullAlertProperty(
+          'Effective',
+          openedAlert?.effective.replace('T', ' ').replace(/\+.*/, ' ($& )'),
+        )}
+        {renderFullAlertProperty(
+          'Expires',
+          openedAlert?.expires.replace('T', ' ').replace(/\+.*/, ' ($& )'),
+        )}
+        {renderFullAlertProperty('Description', openedAlert?.desc)}
       </View>
     );
   };
