@@ -26,13 +26,13 @@ LogBox.ignoreAllLogs(true);
 const persistConfig = {
   key: 'root',
   version: 1,
-  whitelist: ['settings', 'bookmark', 'user'],
+  whitelist: ['settings', 'bookmark', 'user', 'currentLocation'],
   storage: AsyncStorage,
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-const store = configureStore({
+export const store = configureStore({
   reducer: persistedReducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

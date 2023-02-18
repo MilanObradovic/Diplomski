@@ -4,6 +4,7 @@ import {GeoPoint} from '../hooks/useUserLocation';
 import {Hourly, WeatherDescription} from '../types';
 import LottieView from 'lottie-react-native';
 import React from 'react';
+import {store} from '../../App';
 
 export async function post(url = '', data = {}) {
   // Default options are marked with *
@@ -12,6 +13,7 @@ export async function post(url = '', data = {}) {
     mode: 'cors', // no-cors, *cors, same-origin
     headers: {
       'Content-Type': 'application/json',
+      token: store.getState()?.user?.user?.token || '',
     },
     body: JSON.stringify(data), // body data type must match "Content-Type" header
   });
@@ -26,6 +28,7 @@ export async function get(url = '', data = {}) {
     mode: 'cors', // no-cors, *cors, same-origin
     headers: {
       'Content-Type': 'application/json',
+      token: store.getState()?.user?.user?.token || '',
     },
   });
   const result = await response.json();

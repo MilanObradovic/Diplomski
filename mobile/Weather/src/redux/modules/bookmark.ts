@@ -4,6 +4,7 @@ import {
   deleteBookmark,
   getBookmarksForUser,
 } from '../api/bookmark';
+import {Alert} from 'react-native';
 
 export const saveBookmark = createAsyncThunk(
   'saveBookmark',
@@ -17,6 +18,9 @@ export const saveBookmark = createAsyncThunk(
     q: string;
   }) => {
     const response = await createBookmark({userId, locationName, q});
+    if (response.status === 401) {
+      Alert.alert(response.data);
+    }
     return response;
   },
 );

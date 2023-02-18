@@ -54,6 +54,7 @@ import {selectUser, selectIsUserLoggedIn} from '../../redux/selectors/user';
 import AirQuality from '../../components/airQuilitySection';
 import {AlertComponent} from '../../components/alert';
 import {Alert} from '../../types';
+import {Alert as RNAlert} from 'react-native';
 
 export type MainStackParamList = {
   Main: undefined;
@@ -95,21 +96,25 @@ function MainScreen({navigation}: Props) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(
-      fetchWeatherData({
-        location: 'Pecos, United States of America',
-        // userCoords: {
-        //   latitude: 44.08,
-        //   longitude: 20.03,
-        // },
-      }),
-    );
-    dispatch(
-      setCurrentLocation({
-        id: 'Pecos, United States of America',
-        locationName: 'Pecos, United States of America',
-      }),
-    );
+    if (currentLocation) {
+      dispatch(
+        fetchWeatherData({
+          location: currentLocation?.locationName,
+          // userCoords: {
+          //   latitude: 44.08,
+          //   longitude: 20.03,
+          // },
+        }),
+      );
+    } else {
+      RNAlert.alert('Current location not set');
+      dispatch(
+        setCurrentLocation({
+          id: 'Pecos, United States of America',
+          locationName: 'Pecos, United States of America',
+        }),
+      );
+    }
   }, [dispatch]);
 
   const renderLoadingScreen = () => {

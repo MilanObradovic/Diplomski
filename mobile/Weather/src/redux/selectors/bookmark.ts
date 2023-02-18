@@ -15,10 +15,8 @@ export const selectBookmarkedLocations = createSelector(
   ],
   (isUserLoggedIn, accountBased, deviceBased) => {
     if (isUserLoggedIn) {
-      console.log({accountBased});
       return accountBased;
     } else {
-      console.log({deviceBased});
       return deviceBased;
     }
   },
@@ -30,7 +28,6 @@ export const selectIsLocationBookmarked = createSelector(
     (state: RootReducerType, locationId: number) => locationId,
   ],
   (bookmarkedLocations, locationId) => {
-    console.log({bookmarkedLocations});
     return (
       bookmarkedLocations[locationId] !== undefined &&
       bookmarkedLocations[locationId]

@@ -5,6 +5,7 @@ const { mongoose } = require('./mongoose');
 const app = express()
 const { User, Bookmark } = require('./models/index')
 const {ObjectId} = require("mongodb");
+const randToken = require("rand-token");
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
@@ -15,17 +16,41 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 //enabling CORS
-app.use(function (req, res, next) {
+function corsEnabler (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     res.header("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS, PUT, PATCH, DELETE");
     next();
-});
+}
 
-app.use(function (req, res, next) {
-    console.log('middlware')
-    next();
-})
+const  apiRestriction =  async (req, res, next)=> {
+    const token = req.headers?.token;
+    if(token){
+        const user = await User.findOne({token})
+        if(user.isDisabled){
+            res.status(401).json("It seems that your account is not able make new requests at this time.");
+            return;
+        }else{
+            next();
+        }
+    }else{
+        next();
+    }
+}
+
+const  apiAccessLogger =  async (req, res, next)=> {
+    const token = req.headers?.token;
+    if(token){
+        const user = await User.findOneAndUpdate({token}, {lastActivity: Date.now(), $inc: { apiAccessCounter: 1}})
+        next();
+    }else{
+        next();
+    }
+}
+//adding middlewares
+app.use(corsEnabler);
+app.use(apiRestriction);
+app.use(apiAccessLogger);
 
 app.get("/user/all", (req, res)=>{
     User.find({}).then((users) => {
@@ -44,7 +69,7 @@ app.post('/user', (req, res) => {
             let password = req.body.data.password;
             User.findOne({username: username}).then((user) => {
                 if(!!user?.isDisabled){
-                    res.status(200).json("It seems that your account is not able make new requests at this time.");
+                    res.status(401).json("It seems that your account is not able make new requests at this time.");
                 }
                 if (user) {
                     if (user.password === password) {
@@ -143,10 +168,19 @@ app.get('/bookmark/:id', (req, res)=>{
     })
 })
 
+const  populateApiAccessCounter =  () => {
+
+    User.find().then((users)=>{
+        users.forEach(async user=>{
+            const a = await User.findOneAndUpdate({username: user.username}, { apiAccessCounter: Math.round(Math.random()*100)})
+        })
+    })
+}
 app.listen(3000, () => {
     console.group('Node server')
     console.log('Server is listening on port 3000');
     console.groupEnd()
+    // populateApiAccessCounter();
 })
 app.on('exit', () =>{
     console.log('zatvaram mongodb konekciju')

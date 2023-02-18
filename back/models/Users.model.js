@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 // const mongoose = require('mongoose').set('debug', true);
+const randToken = require('rand-token');
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -9,6 +10,12 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         trim: true,
+    },
+    token: {
+        type: String,
+        default: function() {
+            return randToken.generate(16);
+        }
     },
     role: {
         type: String,
@@ -21,6 +28,12 @@ const UserSchema = new mongoose.Schema({
     dateCreated: {
         type: Date,
         default: Date.now
+    },
+    lastActivity: {
+        type: Date,
+    },
+    apiAccessCounter: {
+        type: Number,
     }
 }, {collection: 'Users'});
 

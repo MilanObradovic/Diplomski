@@ -83,6 +83,14 @@ export const UserDashboardScreen = ({navigation}) => {
               thumbColor={theme.primary}
             />
           </View>
+          <View style={styles.cellContainer}>
+            <Text style={styles.cellText}>
+              {moment(item.lastActivity).format('DD-MM-YY, HH:MM')}
+            </Text>
+          </View>
+          <View style={styles.cellContainer}>
+            <Text style={styles.cellText}>{item.apiAccessCounter}</Text>
+          </View>
         </View>
         <Section />
       </View>
@@ -119,6 +127,12 @@ export const UserDashboardScreen = ({navigation}) => {
           </View>
           <View style={styles.cellContainer}>
             <Text style={styles.headerText}>Is active</Text>
+          </View>
+          <View style={styles.cellContainer}>
+            <Text style={styles.headerText}>Last activity</Text>
+          </View>
+          <View style={styles.cellContainer}>
+            <Text style={styles.headerText}>Api counter</Text>
           </View>
         </View>
         <Section />

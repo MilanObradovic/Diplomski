@@ -189,6 +189,9 @@ export type User = {
   role?: 'admin' | 'user';
   isDisabled?: boolean;
   dateCreated: Date;
+  token: string;
+  lastActivity: string;
+  apiAccessCounter: number;
 };
 
 export type Alert = {
