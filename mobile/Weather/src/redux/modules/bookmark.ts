@@ -3,8 +3,10 @@ import {
   createBookmark,
   deleteBookmark,
   getBookmarksForUser,
+  sendNot,
 } from '../api/bookmark';
 import {Alert} from 'react-native';
+import {get} from '../../utils';
 
 export const saveBookmark = createAsyncThunk(
   'saveBookmark',
@@ -40,3 +42,8 @@ export const fetchBookmarksForUser = createAsyncThunk(
     return response;
   },
 );
+
+export const sendNotification = createAsyncThunk('not', async () => {
+  const response = await sendNot();
+  return response;
+});

@@ -7,6 +7,25 @@ const { User, Bookmark } = require('./models/index')
 const {ObjectId} = require("mongodb");
 const randToken = require("rand-token");
 
+const firebaseAdmin = require("firebase-admin");
+
+const serviceAccount = require("./weatherapp-1a469-firebase-adminsdk-xm0vs-c6391977bc.json");
+
+firebaseAdmin.initializeApp({
+    credential: firebaseAdmin.credential.cert(serviceAccount)
+});
+const notification = {
+    notification: {
+        title: "Account Deposit",
+        body: "A deposit to your savings account has just cleared."
+    }
+};
+
+const fcmToken = 'e079rUq0RwqNTPnrZXNiQ4:APA91bEANpAserH76IoKd6Kdskjo3BGSeypsNk6hk0j29dXa65CgE85NTTGuP7t2TB8N8WTv1NxZqFsyt9h-YU54TfpTAzN_KPZjezk2Cd74gC0jVY9oh1-ioAV1MRUzgMsftdoUyZvJ'
+const sendNotification  =() => {
+    firebaseAdmin.messaging().sendToDevice(fcmToken, notification);
+}
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
     extended: true
@@ -59,6 +78,11 @@ app.get("/user/all", (req, res)=>{
     }).catch((reason)=>{
         res.send(reason)
     })
+})
+
+app.get('/notification', (req, res) => {
+    sendNotification();
+    res.status(200).send()
 })
 
 app.post('/user', (req, res) => {

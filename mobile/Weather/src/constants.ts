@@ -29,8 +29,8 @@ export const lightDanger = tomatoDark;
 
 export const NUM_OF_FUTURE_DAYS = 14;
 
-// for email milansd61+1@gmail.com
-const API_KEY = '23ffece10451454cafe183828232301';
+// for email milansd61+2@gmail.com
+const API_KEY = '0b6420634b864682946211718232102';
 
 export const BASE_WEATHER_URL = `https://api.worldweatheronline.com/premium/v1/weather.ashx?key=${API_KEY}&format=json&num_of_days=${NUM_OF_FUTURE_DAYS}`;
 export const BASE_SEARCH_URL = `https://api.worldweatheronline.com/premium/v1/search.ashx?key=${API_KEY}&format=json`;

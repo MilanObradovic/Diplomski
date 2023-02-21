@@ -114,3 +114,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+./weatherapp-1a469-firebase-adminsdk-xm0vs-c6391977bc.json

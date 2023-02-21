@@ -5,7 +5,22 @@ import {Hourly, WeatherDescription} from '../types';
 import LottieView from 'lottie-react-native';
 import React from 'react';
 import {store} from '../../App';
+import messaging, {
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
 
+export const initNotifications = async () => {
+  const authorizationStatus = await messaging().requestPermission();
+
+  if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
+    const token = await messaging().getToken();
+    console.log({token});
+    messaging().onMessage((n) => {
+      console.log('stigla notifikacija');
+      console.log(n);
+    });
+  }
+};
 export async function post(url = '', data = {}) {
   // Default options are marked with *
   const response = await fetch(url, {

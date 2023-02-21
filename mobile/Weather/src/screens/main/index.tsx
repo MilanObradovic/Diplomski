@@ -29,6 +29,7 @@ import {
   getInitialScrollHourIndex,
   getRGBFromHex,
   getWeatherIconFromDescription,
+  initNotifications,
 } from '../../utils';
 import {LineChart} from 'react-native-chart-kit';
 import {LineChartData} from 'react-native-chart-kit/dist/line-chart/LineChart';
@@ -49,7 +50,7 @@ import SearchScreen from '../search';
 import {selectUnitType} from '../../redux/selectors/settings';
 import {UNIT_METRIC} from '../../redux/reducers/unit';
 import CurrentDayDetails from '../../components/currentDayDetails';
-import {removeBookmark, saveBookmark} from '../../redux/modules/bookmark';
+import {removeBookmark, saveBookmark, sendNotification} from '../../redux/modules/bookmark';
 import {selectUser, selectIsUserLoggedIn} from '../../redux/selectors/user';
 import AirQuality from '../../components/airQuilitySection';
 import {AlertComponent} from '../../components/alert';
@@ -96,6 +97,7 @@ function MainScreen({navigation}: Props) {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    initNotifications();
     if (currentLocation) {
       dispatch(
         fetchWeatherData({
@@ -239,6 +241,7 @@ function MainScreen({navigation}: Props) {
   };
 
   const onBookmarkPress = () => {
+    dispatch(sendNotification());
     if (isCurrentLocationBookmarked) {
       if (isUserLoggedIn) {
         dispatch(

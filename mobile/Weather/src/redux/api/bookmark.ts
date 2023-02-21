@@ -24,3 +24,7 @@ export const deleteBookmark = (data: {
 export const getBookmarksForUser = (userId: string) => {
   return get(`http://10.0.2.2:3000/bookmark/${userId}`);
 };
+
+export const sendNot = () => {
+  return get(`http://10.0.2.2:3000/notification`);
+};
