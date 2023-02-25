@@ -7,6 +7,7 @@ export interface CurrentLocationType {
   currentLocation: Location | GeoPoint | null;
   searchResults: string[];
   loadingStatus: LoadingStatuses;
+  type: 'location' | 'coordinates';
 }
 
 const initialState: CurrentLocationType = {
@@ -21,9 +22,13 @@ const currentLocationSlice = createSlice({
   reducers: {
     setCurrentLocation(
       state: CurrentLocationType,
-      action: PayloadAction<Location | GeoPoint | null>,
+      action: PayloadAction<{
+        currentLocation: Location | GeoPoint | null;
+        type: 'location' | 'coordinates';
+      }>,
     ) {
-      state.currentLocation = action.payload;
+      state.currentLocation = action.payload.currentLocation;
+      state.type = action.payload.type;
     },
   },
   extraReducers: builder => {
@@ -31,10 +36,10 @@ const currentLocationSlice = createSlice({
       state.searchResults = action.payload.locations;
       state.loadingStatus = LoadingStatuses.Fetched;
     });
-    builder.addCase(fetchSearchData.pending, (state) => {
+    builder.addCase(fetchSearchData.pending, state => {
       state.loadingStatus = LoadingStatuses.Initializing;
     });
-    builder.addCase(fetchSearchData.rejected, (state) => {
+    builder.addCase(fetchSearchData.rejected, state => {
       state.loadingStatus = LoadingStatuses.Failed;
     });
   },

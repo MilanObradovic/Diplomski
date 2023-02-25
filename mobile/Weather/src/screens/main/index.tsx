@@ -50,12 +50,18 @@ import SearchScreen from '../search';
 import {selectUnitType} from '../../redux/selectors/settings';
 import {UNIT_METRIC} from '../../redux/reducers/unit';
 import CurrentDayDetails from '../../components/currentDayDetails';
-import {removeBookmark, saveBookmark, sendNotification} from '../../redux/modules/bookmark';
+import {
+  removeBookmark,
+  saveBookmark,
+  sendNotification,
+} from '../../redux/modules/bookmark';
 import {selectUser, selectIsUserLoggedIn} from '../../redux/selectors/user';
 import AirQuality from '../../components/airQuilitySection';
 import {AlertComponent} from '../../components/alert';
 import {Alert} from '../../types';
 import {Alert as RNAlert} from 'react-native';
+import {requestLocation} from '../../hooks/useUserLocation';
+import Button from '../../components/button';
 
 export type MainStackParamList = {
   Main: undefined;
@@ -85,7 +91,7 @@ function MainScreen({navigation}: Props) {
     selectTodaysMaxAndMin(state, unitType, selectedDayCard),
   );
 
-  const currentLocation = useSelector(selectCurrentLocation);
+  const {currentLocation, type} = useSelector(selectCurrentLocation);
 
   const isCurrentLocationBookmarked = useSelector((state: RootReducerType) =>
     selectIsLocationBookmarked(state, currentLocation?.id),
@@ -99,23 +105,40 @@ function MainScreen({navigation}: Props) {
   useEffect(() => {
     initNotifications();
     if (currentLocation) {
-      dispatch(
-        fetchWeatherData({
-          location: currentLocation?.locationName,
-          // userCoords: {
-          //   latitude: 44.08,
-          //   longitude: 20.03,
-          // },
-        }),
-      );
+      if (type === 'coordinates') {
+        dispatch(
+          fetchWeatherData({
+            userCoords: {
+              latitude: currentLocation?.latitude,
+              longitude: currentLocation?.longitude,
+            },
+          }),
+        );
+      } else {
+        dispatch(
+          fetchWeatherData({
+            location: currentLocation?.locationName,
+          }),
+        );
+      }
     } else {
       RNAlert.alert('Current location not set');
-      dispatch(
-        setCurrentLocation({
-          id: 'Pecos, United States of America',
-          locationName: 'Pecos, United States of America',
-        }),
-      );
+      requestLocation({
+        successCallback: info => {
+          dispatch(
+            setCurrentLocation({
+              currentLocation: {
+                latitude: info.latitude,
+                longitude: info.longitude,
+              },
+              type: 'coordinates',
+            }),
+          );
+        },
+        blockedCallback: () => {
+          console.log('blocked');
+        },
+      });
     }
   }, [dispatch]);
 
@@ -291,7 +314,9 @@ function MainScreen({navigation}: Props) {
             paddingHorizontal: 50,
             textAlign: 'center',
           }}>
-          {currentLocation.locationName}
+          {type === 'coordinates'
+            ? currentLocation?.latitude
+            : currentLocation.locationName}
         </Text>
         {/*bookmark (star) icon*/}
         <TouchableOpacity
@@ -524,9 +549,28 @@ function MainScreen({navigation}: Props) {
       </Modalize>
     );
   };
+  if (!currentLocation) {
+    return <Text>Waiting for location access</Text>;
+  }
   return (
     <ScreenWrapper navigation={navigation}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
+        <Button
+          text={'Fetch data for current location'}
+          onPress={() => {
+            requestLocation({
+              successCallback: info => {
+                dispatch(fetchWeatherData({userCoords: info}));
+                dispatch(
+                  setCurrentLocation({
+                    currentLocation: info,
+                    type: 'coordinates',
+                  }),
+                );
+              },
+            });
+          }}
+        />
         {!isWeatherInitializing && renderHeader()}
         {!isWeatherInitializing && (
           <AlertComponent

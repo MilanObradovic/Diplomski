@@ -50,7 +50,7 @@ export async function get(url = '', data = {}) {
   return {data: result, status: response.status};
 }
 
-export const isiOSPlatform = () => (Platform.OS = 'ios');
+export const isiOSPlatform = () => (Platform.OS === 'ios');
 
 export const getHourCopyFromMilitaryCopy = (militaryCopy: string): string => {
   const militaryNum = parseInt(militaryCopy, 10) / 100;

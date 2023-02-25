@@ -10,7 +10,7 @@ const AirQuality = () => {
   const currentWeatherConditions = useSelector(selectCurrentWeatherConditions);
   const {theme} = useContext(AppThemeContext);
   const {air_quality} = currentWeatherConditions!;
-  const currentLocation = useSelector(selectCurrentLocation);
+  const {currentLocation, type} = useSelector(selectCurrentLocation);
 
   // US - EPA standard.
   // 1 means Good

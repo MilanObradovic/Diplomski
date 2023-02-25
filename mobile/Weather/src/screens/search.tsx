@@ -44,7 +44,12 @@ function SearchScreen() {
         content={locationName}
         onPress={() => {
           dispatch(fetchWeatherData({location: locationName}));
-          dispatch(setCurrentLocation({id: locationName, locationName}));
+          dispatch(
+            setCurrentLocation({
+              currentLocation: {id: locationName, locationName},
+              type: 'location',
+            }),
+          );
         }}
       />
     );
@@ -58,7 +63,10 @@ function SearchScreen() {
         onPress={() => {
           dispatch(fetchWeatherData({location: locationName}));
           dispatch(
-            setCurrentLocation({id: locationName, locationName: locationName}),
+            setCurrentLocation({
+              currentLocation: {id: locationName, locationName: locationName},
+              type: 'location',
+            }),
           );
         }}
       />
