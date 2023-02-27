@@ -2,18 +2,21 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {LoadingStatuses, Location} from '../../../types';
 import {GeoPoint} from '../../../hooks/useUserLocation';
 import {fetchSearchData} from '../../modules/locations';
+import {fetchWeatherData} from '../../modules/weather';
 
 export interface CurrentLocationType {
   currentLocation: Location | GeoPoint | null;
   searchResults: string[];
   loadingStatus: LoadingStatuses;
   type: 'location' | 'coordinates';
+  locationId: string;
 }
 
 const initialState: CurrentLocationType = {
   currentLocation: null,
   searchResults: [],
   loadingStatus: LoadingStatuses.NotInitialized,
+  locationId: '',
 };
 
 const currentLocationSlice = createSlice({
@@ -41,6 +44,12 @@ const currentLocationSlice = createSlice({
     });
     builder.addCase(fetchSearchData.rejected, state => {
       state.loadingStatus = LoadingStatuses.Failed;
+    });
+    builder.addCase(fetchWeatherData.fulfilled, (state, action) => {
+      const {locationId} = action.payload;
+      if (locationId) {
+        state.locationId = locationId;
+      }
     });
   },
 });

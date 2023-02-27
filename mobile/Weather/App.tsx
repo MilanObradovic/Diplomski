@@ -30,16 +30,31 @@ const persistConfig = {
   storage: AsyncStorage,
 };
 
+const logger = store => next => action => {
+  console.log('============================');
+  console.log('DISPATCHING', action);
+  console.log('============================');
+  let result = next(action);
+  console.log('============================');
+  console.log('next state', store.getState());
+  console.log('============================');
+  return result;
+};
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: getDefaultMiddleware =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }),
+  middleware: getDefaultMiddleware => {
+    return [
+      ...getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        },
+      }),
+      logger,
+    ];
+  },
 });
 
 let persistor = persistStore(store);

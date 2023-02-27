@@ -1,18 +1,19 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {LoadingStatuses, Location, User} from '../../../types';
+import {LoadingStatuses, Location, LocationLog, User} from '../../../types';
 import {fetchAllUsers} from '../../modules/user';
+import {fetchLocationLogs} from '../../modules/locations';
 
 export interface AdminReducerType {
   users: User[];
+  locationLogs: LocationLog[];
   userLoadingStatus: LoadingStatuses;
-  locations: Location[];
   locationLoadingStatus: LoadingStatuses;
 }
 
 const initialState: AdminReducerType = {
   users: [],
   userLoadingStatus: LoadingStatuses.NotInitialized,
-  locations: [],
+  locationLogs: [],
   locationLoadingStatus: LoadingStatuses.NotInitialized,
 };
 
@@ -39,6 +40,13 @@ const adminSlice = createSlice({
     builder.addCase(fetchAllUsers.fulfilled, (state, action) => {
       state.users = action.payload.data;
       state.userLoadingStatus = LoadingStatuses.Fetched;
+    });
+    builder.addCase(fetchLocationLogs.pending, state => {
+      state.locationLoadingStatus = LoadingStatuses.Initializing;
+    });
+    builder.addCase(fetchLocationLogs.fulfilled, (state, action) => {
+      state.locationLogs = action.payload;
+      state.locationLoadingStatus = LoadingStatuses.Fetched;
     });
   },
 });

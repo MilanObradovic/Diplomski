@@ -1,5 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import {getSearchData} from '../api/search';
+import {getLocationLogs} from '../api/locationLogger';
+import {LocationLog} from '../../types';
 
 export const fetchSearchData = createAsyncThunk<
   {locations: string[]},
@@ -18,5 +20,14 @@ export const fetchSearchData = createAsyncThunk<
       }
       return true;
     },
+  },
+);
+
+export const fetchLocationLogs = createAsyncThunk<LocationLog[], undefined>(
+  'location/fetchLocationLogs',
+  async () => {
+    const response = await getLocationLogs();
+    console.log({response});
+    return response.data;
   },
 );

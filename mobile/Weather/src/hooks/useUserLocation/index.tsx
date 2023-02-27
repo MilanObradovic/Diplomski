@@ -1,3 +1,4 @@
+// import Geolocation from '@react-native-community/geolocation';
 import Geolocation from 'react-native-geolocation-service';
 import {
   check,
@@ -39,7 +40,7 @@ const handleLocationResponse = async ({
           successCallback({latitude, longitude});
         },
         () => {},
-        {enableHighAccuracy: true, timeout: 2000, maximumAge: 5000},
+        {enableHighAccuracy: true, timeout: 2000, maximumAge: 5},
       );
       return;
     case RESULTS.DENIED:

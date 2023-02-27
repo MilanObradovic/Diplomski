@@ -25,7 +25,8 @@ import {logout} from './redux/reducers/user';
 import {useAppDispatch} from './hooks/useAppDispatch';
 import {fetchBookmarksForUser} from './redux/modules/bookmark';
 import {ChangePasswordScreen} from './screens/changePassword';
-import {UserDashboardScreen} from "./screens/userDashboard";
+import {UserDashboardScreen} from './screens/userDashboard';
+import {LocationLogsScreen} from './screens/locationLogs';
 
 const Drawer = createDrawerNavigator();
 
@@ -65,17 +66,17 @@ const Navigation = () => {
       </Stack.Group>
     </Stack.Navigator>
   );
-  const AdminStack = () => (
-    <Stack.Navigator>
-      <Stack.Group screenOptions={{headerShown: true}}>
-        <Stack.Screen name={'User dashboard'} component={UserDashboardScreen} />
-        <Stack.Screen
-          name={'Location dashboard'}
-          component={LocationDashboardScreen}
-        />
-      </Stack.Group>
-    </Stack.Navigator>
-  );
+  // const AdminStack = () => (
+  //   <Stack.Navigator>
+  //     <Stack.Group screenOptions={{headerShown: true}}>
+  //       <Stack.Screen name={'User dashboard'} component={UserDashboardScreen} />
+  //       <Stack.Screen
+  //         name={'Location dashboard'}
+  //         component={LocationLogsScreen}
+  //       />
+  //     </Stack.Group>
+  //   </Stack.Navigator>
+  // );
   const SettingsStackNavigator = () => (
     <Stack.Navigator>
       <Stack.Group screenOptions={{headerShown: false}}>
@@ -163,12 +164,12 @@ const Navigation = () => {
             component={UserDashboardScreen}
           />
         )}
-        {/*{isAdmin && (*/}
-        {/*  <Drawer.Screen*/}
-        {/*    name={'Location dashboard'}*/}
-        {/*    component={LocationDashboardScreen}*/}
-        {/*  />*/}
-        {/*)}*/}
+        {isAdmin && (
+          <Drawer.Screen
+            name={'Location dashboard'}
+            component={LocationLogsScreen}
+          />
+        )}
       </Drawer.Navigator>
     </NavigationContainer>
   );

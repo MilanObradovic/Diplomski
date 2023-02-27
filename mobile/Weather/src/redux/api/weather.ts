@@ -17,9 +17,9 @@ export const getWeatherData = ({
     BASE_WEATHER_URL +
     `&q=${placeForSearch}` +
     '&tp=1' +
-    '&nearest_area=true' +
     '&aqi=yes' +
     '&showmap=yes' +
+    '&includelocation=yes' +
     '&alerts=yes';
   return axios(requestUrl);
 };

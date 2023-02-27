@@ -37,7 +37,10 @@ import {styles} from './styles';
 import {faStar as faStarRegular} from '@fortawesome/free-regular-svg-icons';
 import {faSearch, faStar} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {selectCurrentLocation} from '../../redux/selectors/currentLocation';
+import {
+  selectCurrentLocation,
+  selectLocationName,
+} from '../../redux/selectors/currentLocation';
 import {setCurrentLocation} from '../../redux/reducers/currentLocation';
 import {
   addBookmarkLocally,
@@ -92,6 +95,7 @@ function MainScreen({navigation}: Props) {
   );
 
   const {currentLocation, type} = useSelector(selectCurrentLocation);
+  const nameOfTheLocation = useSelector(selectLocationName);
 
   const isCurrentLocationBookmarked = useSelector((state: RootReducerType) =>
     selectIsLocationBookmarked(state, currentLocation?.id),
@@ -123,6 +127,15 @@ function MainScreen({navigation}: Props) {
       }
     } else {
       RNAlert.alert('Current location not set');
+      dispatch(
+        setCurrentLocation({
+          currentLocation: {
+            latitude: 44.0,
+            longitude: 20.0,
+          },
+          type: 'coordinates',
+        }),
+      );
       requestLocation({
         successCallback: info => {
           dispatch(
@@ -314,9 +327,7 @@ function MainScreen({navigation}: Props) {
             paddingHorizontal: 50,
             textAlign: 'center',
           }}>
-          {type === 'coordinates'
-            ? currentLocation?.latitude
-            : currentLocation.locationName}
+          {type === 'location' ? currentLocation?.id : 'your coord'}
         </Text>
         {/*bookmark (star) icon*/}
         <TouchableOpacity
@@ -549,6 +560,7 @@ function MainScreen({navigation}: Props) {
       </Modalize>
     );
   };
+  console.log({currentLocation});
   if (!currentLocation) {
     return <Text>Waiting for location access</Text>;
   }
@@ -558,17 +570,28 @@ function MainScreen({navigation}: Props) {
         <Button
           text={'Fetch data for current location'}
           onPress={() => {
-            requestLocation({
-              successCallback: info => {
-                dispatch(fetchWeatherData({userCoords: info}));
-                dispatch(
-                  setCurrentLocation({
-                    currentLocation: info,
-                    type: 'coordinates',
-                  }),
-                );
-              },
-            });
+            dispatch(fetchWeatherData({location: 'Belgrade, Serbia'}));
+            dispatch(
+              setCurrentLocation({
+                currentLocation: {
+                  locationName: 'Belgrade, Serbia',
+                  id: 'Belgrade, Serbia',
+                },
+                type: 'location',
+              }),
+            );
+            // requestLocation({
+            //   successCallback: info => {
+            //     console.log({info});
+            //     dispatch(fetchWeatherData({userCoords: info}));
+            //     dispatch(
+            //       setCurrentLocation({
+            //         currentLocation: info,
+            //         type: 'coordinates',
+            //       }),
+            //     );
+            //   },
+            // });
           }}
         />
         {!isWeatherInitializing && renderHeader()}

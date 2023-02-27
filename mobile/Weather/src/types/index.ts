@@ -209,3 +209,8 @@ export type Alert = {
   desc: string;
   instruction: string;
 };
+
+export type LocationLog = {
+  locationName: string;
+  counter: number;
+};

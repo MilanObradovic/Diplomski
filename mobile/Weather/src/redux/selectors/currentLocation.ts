@@ -8,5 +8,8 @@ export const selectCurrentLocation = (state: RootReducerType) => ({
 export const selectSearchLocations = (state: RootReducerType) =>
   state.currentLocation.searchResults;
 
+export const selectLocationName = (state: RootReducerType) =>
+  state.currentLocation.locationId;
+
 export const selectSearchLocationsLoadingStatus = (state: RootReducerType) =>
   state.currentLocation.loadingStatus;

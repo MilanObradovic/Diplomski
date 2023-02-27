@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const { mongoose } = require('./mongoose');
 
 const app = express()
-const { User, Bookmark } = require('./models/index')
+const { User, Bookmark, LocationLog } = require('./models/index')
 const {ObjectId} = require("mongodb");
 const randToken = require("rand-token");
 
@@ -186,6 +186,30 @@ app.post('/bookmark', (req, res)=>{
             break;
     }
 })
+app.post('/locationLog', (req, res)=>{
+    const {locationName} = req.body.data
+    LocationLog.findOne({locationName}).then((location)=>{
+        if(location){
+            LocationLog.findOneAndUpdate({locationName}, {$inc: { counter: 1}}).then(()=>{
+                res.status(200).send()
+            })
+        }else{
+            LocationLog.create({locationName}).then(()=>{
+                res.status(200).send()
+            })
+        }
+    })
+})
+
+app.get("/locationLog", (req, res)=>{
+    LocationLog.find({}).then((locationsLogs) => {
+        // User.find({}).skip(2).limit(2).then((users) => {
+        res.send(locationsLogs)
+    }).catch((reason)=>{
+        res.send(reason)
+    })
+})
+
 app.get('/bookmark/:id', (req, res)=>{
     Bookmark.find({userId: req.params.id}).then((result)=>{
         res.status(200).send(result)

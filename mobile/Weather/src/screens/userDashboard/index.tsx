@@ -1,5 +1,13 @@
 import React, {useContext, useEffect} from 'react';
-import {Alert, FlatList, StyleSheet, Switch, Text, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 import {useSelector} from 'react-redux';
 import {disableUser, fetchAllUsers} from '../../redux/modules/user';
 import {useAppDispatch} from '../../hooks/useAppDispatch';
@@ -158,8 +166,10 @@ export const UserDashboardScreen = ({navigation}) => {
   }
   return (
     <ScreenWrapper navigation={navigation}>
-      <Button text={'Refetch user data'} onPress={refetchData} />
       <FlatList
+        refreshControl={
+          <RefreshControl refreshing={isLoading} onRefresh={refetchData} />
+        }
         ListHeaderComponent={renderHeader()}
         data={users}
         renderItem={renderUserCell}
