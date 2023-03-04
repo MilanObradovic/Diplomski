@@ -8,6 +8,8 @@ import {
   lightPrimary,
 } from '../../constants';
 import {styles} from './styles';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {IconProp} from '@fortawesome/fontawesome-svg-core';
 
 interface Props {
   text: string;
@@ -16,6 +18,7 @@ interface Props {
   isWarning?: boolean;
   isDanger?: boolean;
   isOutlined?: boolean;
+  icon?: IconProp | null;
 }
 
 const Button = ({
@@ -24,6 +27,7 @@ const Button = ({
   isPrimary = true,
   isDanger = false,
   isOutlined = true,
+  icon = null,
 }: Props) => {
   const {theme, isDarkMode} = useContext(AppThemeContext);
   const {primary, danger, backgroundColor} = theme;
@@ -49,14 +53,17 @@ const Button = ({
     <TouchableOpacity
       onPress={onPress}
       style={[calculatedStyles, styles.container]}>
-      <Text
-        style={{
-          color: customTextColor,
-          fontWeight: 'bold',
-          textAlign: 'center',
-        }}>
-        {text}
-      </Text>
+      {!icon && (
+        <Text
+          style={{
+            color: customTextColor,
+            fontWeight: 'bold',
+            textAlign: 'center',
+          }}>
+          {text}
+        </Text>
+      )}
+      {icon && <FontAwesomeIcon icon={icon} color={customTextColor} size={30} />}
     </TouchableOpacity>
   );
 };

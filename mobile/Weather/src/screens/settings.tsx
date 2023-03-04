@@ -14,11 +14,13 @@ import {setUnitType} from '../redux/reducers/unit';
 import {useAppDispatch} from '../hooks/useAppDispatch';
 import {faChevronRight} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {selectIsUserLoggedIn} from '../redux/selectors/user';
 
 function SettingsScreen({navigation}) {
   const {isDarkMode, setDarkMode, theme} = useContext(AppThemeContext);
   const unitType = useSelector(selectUnitType);
   const pressureType = useSelector(selectPressureType);
+  const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
 
   const dispatch = useAppDispatch();
 
@@ -99,35 +101,32 @@ function SettingsScreen({navigation}) {
           />
         </View>
         <Section />
-        <Text
-          style={{color: textColor, fontSize: fontSize.md, paddingVertical: 8}}>
-          Location access
-        </Text>
-        <Section />
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('Change password');
-          }}
-          style={{
-            paddingVertical: 8,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text
+        {isUserLoggedIn && (
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate('Change password');
+            }}
             style={{
-              color: theme.textColor,
-              fontSize: fontSize.md,
               paddingVertical: 8,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}>
-            Change password
-          </Text>
-          <FontAwesomeIcon
-            color={theme.primary}
-            icon={faChevronRight}
-            size={24}
-          />
-        </TouchableOpacity>
+            <Text
+              style={{
+                color: theme.textColor,
+                fontSize: fontSize.md,
+                paddingVertical: 8,
+              }}>
+              Change password
+            </Text>
+            <FontAwesomeIcon
+              color={theme.primary}
+              icon={faChevronRight}
+              size={24}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </ScreenWrapper>
   );

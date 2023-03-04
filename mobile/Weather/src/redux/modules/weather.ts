@@ -21,9 +21,8 @@ export const fetchWeatherData = createAsyncThunk<
       response.data.data;
     let areaName = null;
     if (userCoords) {
-      areaName = `${nearest_area[0]?.area_name[0].value}, ${nearest_area[0]?.country[0].value}`;
+      areaName = `${nearest_area[0]?.areaName[0]?.value}, ${nearest_area[0]?.country[0]?.value}`;
     }
-    console.log({joj: response.data.data});
     logLocation({locationName: location || areaName});
     return {
       currentCondition: current_condition[0],

@@ -15,7 +15,7 @@ import {AppThemeContext} from '../context/theme';
 import {fetchWeatherData} from '../redux/modules/weather';
 import {setCurrentLocation} from '../redux/reducers/currentLocation';
 
-function SearchScreen() {
+function SearchScreen({navigation}) {
   const dispatch = useAppDispatch();
 
   const {theme} = useContext(AppThemeContext);
@@ -43,6 +43,7 @@ function SearchScreen() {
       <SearchItem
         content={locationName}
         onPress={() => {
+          navigation.navigate('Main');
           dispatch(fetchWeatherData({location: locationName}));
           dispatch(
             setCurrentLocation({
@@ -61,6 +62,7 @@ function SearchScreen() {
       <SearchItem
         content={locationName}
         onPress={() => {
+          navigation.navigate('Main');
           dispatch(fetchWeatherData({location: locationName}));
           dispatch(
             setCurrentLocation({

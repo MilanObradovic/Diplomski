@@ -27,6 +27,8 @@ import {fetchBookmarksForUser} from './redux/modules/bookmark';
 import {ChangePasswordScreen} from './screens/changePassword';
 import {UserDashboardScreen} from './screens/userDashboard';
 import {LocationLogsScreen} from './screens/locationLogs';
+import {LocationChooser} from './screens/locationChooser';
+import {initNotifications} from './utils';
 
 const Drawer = createDrawerNavigator();
 
@@ -42,7 +44,10 @@ const Navigation = () => {
   const userData = useSelector(selectUser);
   const isUserLoggedIn = useSelector(selectIsUserLoggedIn);
   const isAdmin = useSelector(selectIsLoggedInUserAdmin);
-  console.log({isAdmin});
+
+  useEffect(() => {
+    initNotifications();
+  }, []);
 
   useEffect(() => {
     if (isUserLoggedIn) {
@@ -53,8 +58,9 @@ const Navigation = () => {
   const MainStackNavigator = () => (
     <Stack.Navigator>
       <Stack.Group screenOptions={{headerShown: false}}>
+        <Stack.Screen name={'LocationChooser'} component={LocationChooser} />
         <Stack.Screen name={'Main'} component={MainScreen} />
-        <Stack.Screen name={'Search'} component={SearchScreen} />
+        {/*<Stack.Screen name={'Search'} component={SearchScreen} />*/}
       </Stack.Group>
     </Stack.Navigator>
   );

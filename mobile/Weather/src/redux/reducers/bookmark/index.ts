@@ -37,6 +37,9 @@ const bookmarkSlice = createSlice({
     },
   },
   extraReducers: builder => {
+    builder.addCase(fetchBookmarksForUser.pending, (state, action) => {
+      state.locationsAccountBased = {};
+    });
     builder.addCase(fetchBookmarksForUser.fulfilled, (state, action) => {
       const {status, data} = action.payload;
       if (status === 200) {

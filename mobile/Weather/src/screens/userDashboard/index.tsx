@@ -1,11 +1,13 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   Alert,
+  Dimensions,
   FlatList,
   RefreshControl,
   StyleSheet,
   Switch,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {useSelector} from 'react-redux';
@@ -21,14 +23,18 @@ import {User} from '../../types';
 import Section from '../../components/section';
 import moment from 'moment';
 import ScreenWrapper from '../../components/screenWrapper';
-import Button from '../../components/button';
 import {setIsActive} from '../../redux/reducers/admin';
+import {Modalize} from 'react-native-modalize';
+import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
+import {faIdCard} from '@fortawesome/free-solid-svg-icons';
 
 export const UserDashboardScreen = ({navigation}) => {
   const isLoading = useSelector(selectIsLoadingAllUsers);
   const users = useSelector(selectAllUsers);
   const {theme} = useContext(AppThemeContext);
   const dispatch = useAppDispatch();
+  const userBottomSheet = useRef(null);
+  const [userIndex, setUserIndex] = useState(0);
 
   useEffect(() => {
     dispatch(fetchAllUsers());
@@ -38,10 +44,55 @@ export const UserDashboardScreen = ({navigation}) => {
     dispatch(fetchAllUsers());
   };
 
-  const renderUserCell = ({item}: {item: User}) => {
+  const onSwitchPress = ({newValue, user}) => {
+    Alert.alert(
+      `Are you sure you want to ${newValue ? 'activate' : 'deactivate'} user ${
+        user?.username
+      }?`,
+      '',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            dispatch(
+              disableUser({
+                username: user!.username,
+                isActive: newValue,
+              }),
+            ).then(response => {
+              if (response.payload.status === 200) {
+                dispatch(
+                  setIsActive({
+                    username: user.username,
+                    isActive: newValue,
+                  }),
+                );
+              }
+              Alert.alert(response?.payload?.data);
+            });
+          },
+        },
+        {text: 'Cancel', style: 'cancel'},
+      ],
+    );
+  };
+
+  const renderUserCell = ({item, index}: {item: User; index: number}) => {
     return (
-      <View>
-        <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => {
+          setUserIndex(index);
+          userBottomSheet?.current?.open();
+        }}>
+        <View
+          style={[
+            styles.container,
+            item.isDisabled
+              ? {
+                  backgroundColor: theme.gray,
+                }
+              : {},
+          ]}>
           <View style={styles.cellContainer}>
             <Text style={styles.cellText}>{item.username}</Text>
           </View>
@@ -53,55 +104,9 @@ export const UserDashboardScreen = ({navigation}) => {
           <View style={styles.cellContainer}>
             <Text style={styles.cellText}>{item.role}</Text>
           </View>
-          <View style={styles.cellContainer}>
-            <Switch
-              value={!item.isDisabled}
-              onValueChange={newValue => {
-                Alert.alert(
-                  `Are you sure you want to ${
-                    newValue ? 'activate' : 'deactivate'
-                  } user ${item?.username}?`,
-                  '',
-                  [
-                    {
-                      text: 'Yes',
-                      onPress: () => {
-                        dispatch(
-                          disableUser({
-                            username: item!.username,
-                            isActive: newValue,
-                          }),
-                        ).then(response => {
-                          if (response.payload.status === 200) {
-                            dispatch(
-                              setIsActive({
-                                username: item.username,
-                                isActive: newValue,
-                              }),
-                            );
-                          }
-                          Alert.alert(response?.payload?.data);
-                        });
-                      },
-                    },
-                    {text: 'Cancel', style: 'cancel'},
-                  ],
-                );
-              }}
-              thumbColor={theme.primary}
-            />
-          </View>
-          <View style={styles.cellContainer}>
-            <Text style={styles.cellText}>
-              {moment(item.lastActivity).format('DD-MM-YY, HH:MM')}
-            </Text>
-          </View>
-          <View style={styles.cellContainer}>
-            <Text style={styles.cellText}>{item.apiAccessCounter}</Text>
-          </View>
         </View>
         <Section />
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -111,14 +116,18 @@ export const UserDashboardScreen = ({navigation}) => {
     cellContainer: {
       flex: 1,
       borderBottomWidth: 1,
-      borderRightWidth: 1,
       borderColor: theme.primary,
       justifyContent: 'center',
       alignItems: 'center',
-      padding: 4,
+      padding: 8,
     },
     headerText: {color: theme.textColor, fontWeight: 'bold'},
-    cellText: {color: theme.textColor},
+    cellText: {color: theme.textColor, fontSize: theme.fontSize.md},
+    sheetCell: {
+      flexDirection: 'row',
+      padding: 8,
+      justifyContent: 'space-between',
+    },
   });
   const renderHeader = () => {
     return (
@@ -133,18 +142,74 @@ export const UserDashboardScreen = ({navigation}) => {
           <View style={styles.cellContainer}>
             <Text style={styles.headerText}>Type</Text>
           </View>
-          <View style={styles.cellContainer}>
-            <Text style={styles.headerText}>Is active</Text>
-          </View>
-          <View style={styles.cellContainer}>
-            <Text style={styles.headerText}>Last activity</Text>
-          </View>
-          <View style={styles.cellContainer}>
-            <Text style={styles.headerText}>Api counter</Text>
-          </View>
         </View>
         <Section />
       </View>
+    );
+  };
+
+  const renderFullBottomSheet = () => {
+    const user = users[userIndex];
+    return (
+      <View style={{paddingVertical: 24}}>
+        <View style={{width: '100%', alignItems: 'center'}}>
+          <FontAwesomeIcon icon={faIdCard} size={40} color={theme.primary} />
+        </View>
+        <View style={styles.sheetCell}>
+          <Text style={styles.headerText}>Username</Text>
+          <Text style={[styles.headerText]}>{user.username}</Text>
+        </View>
+        <Section />
+        <View style={styles.sheetCell}>
+          <Text style={styles.headerText}>Type</Text>
+          <Text style={styles.headerText}>{user.role}</Text>
+        </View>
+        <Section />
+        <View style={styles.sheetCell}>
+          <Text style={styles.headerText}>Is active</Text>
+          <Switch
+            value={!user.isDisabled}
+            onValueChange={newValue => {
+              onSwitchPress({newValue, user});
+            }}
+            thumbColor={theme.primary}
+          />
+        </View>
+        <Section />
+        <View style={styles.sheetCell}>
+          <Text style={styles.headerText}>Api access counter</Text>
+          <Text style={styles.headerText}>{user.apiAccessCounter}</Text>
+        </View>
+        <Section />
+        <View style={styles.sheetCell}>
+          <Text style={styles.headerText}>Date created</Text>
+          <Text style={styles.headerText}>
+            {moment(user.dateCreated).format('DD-MM-YYYY')}
+          </Text>
+        </View>
+        <Section />
+        <View style={styles.sheetCell}>
+          <Text style={styles.headerText}>Date created</Text>
+          <Text style={styles.headerText}>
+            {moment(user.lastActivity).format('DD-MM-YYYY')}
+          </Text>
+        </View>
+      </View>
+    );
+  };
+  const renderUserBottomSheet = () => {
+    return (
+      <Modalize
+        ref={userBottomSheet}
+        withHandle
+        modalTopOffset={64}
+        childrenStyle={{paddingHorizontal: 16, paddingVertical: 16}}
+        modalStyle={{backgroundColor: theme.backgroundColor}}
+        adjustToContentHeight
+        snapPoint={Dimensions.get('screen').height / 2}
+        disableScrollIfPossible>
+        {renderFullBottomSheet()}
+      </Modalize>
     );
   };
 
@@ -175,6 +240,7 @@ export const UserDashboardScreen = ({navigation}) => {
         renderItem={renderUserCell}
         keyExtractor={extractKey}
       />
+      {renderUserBottomSheet()}
     </ScreenWrapper>
   );
 };

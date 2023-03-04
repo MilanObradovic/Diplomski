@@ -1,8 +1,7 @@
-import React, {useContext, useRef, useState} from 'react';
+import React, {useContext} from 'react';
 import {useSelector} from 'react-redux';
 import {selectAlerts} from '../../redux/selectors/alerts';
 import {
-  Dimensions,
   FlatList,
   StyleSheet,
   Text,
@@ -14,7 +13,6 @@ import {AppThemeContext} from '../../context/theme';
 import {getRGBFromHexWithOpacity} from '../../utils';
 import {faAngleDoubleRight} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
-import {Modalize} from 'react-native-modalize';
 
 const styles = StyleSheet.create({
   alertContainer: {

@@ -6,13 +6,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useContext, useEffect, useState, useRef} from 'react';
+import React, {useContext, useState, useRef} from 'react';
 import LottieView from 'lottie-react-native';
 import ScreenWrapper from '../../components/screenWrapper';
 import {useSelector} from 'react-redux';
 import {AppThemeContext} from '../../context/theme';
 import {useAppDispatch} from '../../hooks/useAppDispatch';
-import {fetchWeatherData} from '../../redux/modules/weather';
 import moment from 'moment';
 import {
   selectCurrentTemperature,
@@ -29,19 +28,17 @@ import {
   getInitialScrollHourIndex,
   getRGBFromHex,
   getWeatherIconFromDescription,
-  initNotifications,
 } from '../../utils';
 import {LineChart} from 'react-native-chart-kit';
 import {LineChartData} from 'react-native-chart-kit/dist/line-chart/LineChart';
 import {styles} from './styles';
 import {faStar as faStarRegular} from '@fortawesome/free-regular-svg-icons';
-import {faSearch, faStar} from '@fortawesome/free-solid-svg-icons';
+import {faStar} from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {
   selectCurrentLocation,
   selectLocationName,
 } from '../../redux/selectors/currentLocation';
-import {setCurrentLocation} from '../../redux/reducers/currentLocation';
 import {
   addBookmarkLocally,
   removeBookmarkLocally,
@@ -62,9 +59,6 @@ import {selectUser, selectIsUserLoggedIn} from '../../redux/selectors/user';
 import AirQuality from '../../components/airQuilitySection';
 import {AlertComponent} from '../../components/alert';
 import {Alert} from '../../types';
-import {Alert as RNAlert} from 'react-native';
-import {requestLocation} from '../../hooks/useUserLocation';
-import Button from '../../components/button';
 
 export type MainStackParamList = {
   Main: undefined;
@@ -97,63 +91,17 @@ function MainScreen({navigation}: Props) {
   const {currentLocation, type} = useSelector(selectCurrentLocation);
   const nameOfTheLocation = useSelector(selectLocationName);
 
+  const currentLocationName =
+    type === 'location' ? currentLocation?.locationName : nameOfTheLocation;
+
   const isCurrentLocationBookmarked = useSelector((state: RootReducerType) =>
-    selectIsLocationBookmarked(state, currentLocation?.id),
+    selectIsLocationBookmarked(state, currentLocationName),
   );
 
   const futureHourlyData = useSelector(selectFutureHourlyData);
   const futureDaysData = useSelector(selectFutureDays);
 
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    initNotifications();
-    if (currentLocation) {
-      if (type === 'coordinates') {
-        dispatch(
-          fetchWeatherData({
-            userCoords: {
-              latitude: currentLocation?.latitude,
-              longitude: currentLocation?.longitude,
-            },
-          }),
-        );
-      } else {
-        dispatch(
-          fetchWeatherData({
-            location: currentLocation?.locationName,
-          }),
-        );
-      }
-    } else {
-      RNAlert.alert('Current location not set');
-      dispatch(
-        setCurrentLocation({
-          currentLocation: {
-            latitude: 44.0,
-            longitude: 20.0,
-          },
-          type: 'coordinates',
-        }),
-      );
-      requestLocation({
-        successCallback: info => {
-          dispatch(
-            setCurrentLocation({
-              currentLocation: {
-                latitude: info.latitude,
-                longitude: info.longitude,
-              },
-              type: 'coordinates',
-            }),
-          );
-        },
-        blockedCallback: () => {
-          console.log('blocked');
-        },
-      });
-    }
-  }, [dispatch]);
 
   const renderLoadingScreen = () => {
     return (
@@ -283,23 +231,28 @@ function MainScreen({navigation}: Props) {
         dispatch(
           removeBookmark({
             userId: user!.username,
-            locationName: currentLocation.locationName,
+            locationName: currentLocationName,
           }),
         );
       } else {
-        dispatch(removeBookmarkLocally(currentLocation.id));
+        dispatch(removeBookmarkLocally(currentLocationName));
       }
     } else {
       if (isUserLoggedIn) {
         dispatch(
           saveBookmark({
             userId: user?.username,
-            locationName: currentLocation.id,
-            q: currentLocation.id,
+            locationName: currentLocationName,
+            q: currentLocationName,
           }),
         );
       } else {
-        dispatch(addBookmarkLocally(currentLocation));
+        dispatch(
+          addBookmarkLocally({
+            id: currentLocationName,
+            locationName: currentLocationName,
+          }),
+        );
       }
     }
   };
@@ -308,18 +261,8 @@ function MainScreen({navigation}: Props) {
     return (
       <View
         style={{
-          flexDirection: 'row',
           justifyContent: 'center',
         }}>
-        {/* search icon*/}
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={{position: 'absolute', right: 16}}
-          onPress={() => {
-            bottomSheetRef?.current.open();
-          }}>
-          <FontAwesomeIcon color={theme.primary} icon={faSearch} size={20} />
-        </TouchableOpacity>
         <Text
           style={{
             fontSize: theme.fontSize.lg,
@@ -327,12 +270,12 @@ function MainScreen({navigation}: Props) {
             paddingHorizontal: 50,
             textAlign: 'center',
           }}>
-          {type === 'location' ? currentLocation?.id : 'your coord'}
+          {currentLocationName}
         </Text>
         {/*bookmark (star) icon*/}
         <TouchableOpacity
           activeOpacity={0.7}
-          style={{position: 'absolute', left: 16}}
+          style={{position: 'absolute', left: 16, zIndex: 2}}
           onPress={onBookmarkPress}>
           <FontAwesomeIcon
             color={'#FFC82F'}
@@ -497,7 +440,7 @@ function MainScreen({navigation}: Props) {
       </ScrollView>
     </View>
   );
-  if (isWeatherInitializing) {
+  if (isWeatherInitializing || !futureHourlyData) {
     return renderLoadingScreen();
   }
 
@@ -560,40 +503,12 @@ function MainScreen({navigation}: Props) {
       </Modalize>
     );
   };
-  console.log({currentLocation});
   if (!currentLocation) {
     return <Text>Waiting for location access</Text>;
   }
   return (
     <ScreenWrapper navigation={navigation}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
-        <Button
-          text={'Fetch data for current location'}
-          onPress={() => {
-            dispatch(fetchWeatherData({location: 'Belgrade, Serbia'}));
-            dispatch(
-              setCurrentLocation({
-                currentLocation: {
-                  locationName: 'Belgrade, Serbia',
-                  id: 'Belgrade, Serbia',
-                },
-                type: 'location',
-              }),
-            );
-            // requestLocation({
-            //   successCallback: info => {
-            //     console.log({info});
-            //     dispatch(fetchWeatherData({userCoords: info}));
-            //     dispatch(
-            //       setCurrentLocation({
-            //         currentLocation: info,
-            //         type: 'coordinates',
-            //       }),
-            //     );
-            //   },
-            // });
-          }}
-        />
         {!isWeatherInitializing && renderHeader()}
         {!isWeatherInitializing && (
           <AlertComponent

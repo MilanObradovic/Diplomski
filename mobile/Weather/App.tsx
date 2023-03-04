@@ -36,7 +36,7 @@ const logger = store => next => action => {
   console.log('============================');
   let result = next(action);
   console.log('============================');
-  console.log('next state', store.getState());
+  console.log('next state', store.getState().bookmark);
   console.log('============================');
   return result;
 };
