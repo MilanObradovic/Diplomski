@@ -16,14 +16,20 @@ firebaseAdmin.initializeApp({
 });
 const notification = {
     notification: {
-        title: "Account Deposit",
-        body: "A deposit to your savings account has just cleared."
+        title: "Hey yo",
+        body: "Outside a shit storm"
     }
 };
 
-const fcmToken = 'e079rUq0RwqNTPnrZXNiQ4:APA91bEANpAserH76IoKd6Kdskjo3BGSeypsNk6hk0j29dXa65CgE85NTTGuP7t2TB8N8WTv1NxZqFsyt9h-YU54TfpTAzN_KPZjezk2Cd74gC0jVY9oh1-ioAV1MRUzgMsftdoUyZvJ'
+const fcmToken = 'e1U_QNUZSFuOLOAuYwPdYd:APA91bFzlB__OUXJ9y99E0dtxBGamGE-Ye8qJ2oR6xmVrfS26aB98la_pT3tqa3Q7zyPtOz9z2Yhb8yir_fyAFWi4U1rpkDi_up3alnvpTg1JxLMaUudEAB_e88a5uGAH9QlNP20sVRx'
 const sendNotification  =() => {
-    firebaseAdmin.messaging().sendToDevice(fcmToken, notification);
+    setTimeout(()=>{
+
+    firebaseAdmin.messaging().sendToDevice(fcmToken, notification).catch((e)=>{
+        console.log({e})
+    });
+    }, 5000)
+
 }
 
 // parse application/x-www-form-urlencoded

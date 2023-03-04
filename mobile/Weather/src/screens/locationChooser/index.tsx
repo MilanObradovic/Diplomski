@@ -24,6 +24,7 @@ import {Modalize} from 'react-native-modalize';
 import SearchScreen from '../search';
 import Button from '../../components/button';
 import notifee from '@notifee/react-native';
+import {sendNot} from '../../redux/api/bookmark';
 
 export const LocationChooser = props => {
   const {navigation} = props;
@@ -175,7 +176,9 @@ export const LocationChooser = props => {
             isOutlined={false}
             text={'a'}
             onPress={() => {
-              bottomSheetRef?.current.open();
+              // bottomSheetRef?.current.open();
+                    sendNot();
+
             }}
             icon={faSearch}
           />

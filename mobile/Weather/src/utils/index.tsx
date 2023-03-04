@@ -5,12 +5,10 @@ import {Hourly, WeatherDescription} from '../types';
 import LottieView from 'lottie-react-native';
 import React from 'react';
 import {store} from '../../App';
-import messaging, {
-  FirebaseMessagingTypes,
-} from '@react-native-firebase/messaging';
-import notifee from "@notifee/react-native";
+import messaging from '@react-native-firebase/messaging';
+import notifee, {AndroidImportance} from '@notifee/react-native';
 
-async function onDisplayNotification() {
+async function onDisplayNotification({title, body}) {
   // Request permissions (required for iOS)
   await notifee.requestPermission();
 
@@ -22,8 +20,8 @@ async function onDisplayNotification() {
 
   // Display a notification
   await notifee.displayNotification({
-    title: 'Notification Title',
-    body: 'Main body content of the notification',
+    title,
+    body,
     android: {
       channelId,
       smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
@@ -31,6 +29,7 @@ async function onDisplayNotification() {
       pressAction: {
         id: 'default',
       },
+      importance: AndroidImportance.HIGH,
     },
   });
 }
@@ -41,8 +40,12 @@ export const initNotifications = async () => {
   if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
     const token = await messaging().getToken();
     console.log({token});
-    messaging().onMessage((n) => {
-      onDisplayNotification
+    messaging().onMessage(n => {
+      console.log({n});
+      onDisplayNotification({
+        title: n.notification?.title,
+        body: n.notification?.body,
+      });
     });
   }
 };
@@ -75,7 +78,7 @@ export async function get(url = '', data = {}) {
   return {data: result, status: response.status};
 }
 
-export const isiOSPlatform = () => (Platform.OS === 'ios');
+export const isiOSPlatform = () => Platform.OS === 'ios';
 
 export const getHourCopyFromMilitaryCopy = (militaryCopy: string): string => {
   const militaryNum = parseInt(militaryCopy, 10) / 100;
