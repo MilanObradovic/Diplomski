@@ -45,3 +45,10 @@ export const deactivateUser = ({
     data: {username, isActive},
   });
 };
+
+export const sendFCMToken = (data: {username: string; token: string}) => {
+  return post('http://10.0.2.2:3000/user', {
+    action: 'FCMToken',
+    data: {username: data.username, token: data.token},
+  });
+};

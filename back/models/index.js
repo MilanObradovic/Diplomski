@@ -1,9 +1,3 @@
-const { User } = require('./Users.model');
-const { Bookmark } = require('./Bookmark.model');
-const { LocationLog } = require('./LocationLog.model');
-
-module.exports = {
-    User,
-    Bookmark,
-    LocationLog,
-}
+export  { User } from './Users.model.js';
+export { Bookmark } from './Bookmark.model.js';
+export { LocationLog } from './LocationLog.model.js';

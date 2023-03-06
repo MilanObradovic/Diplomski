@@ -10,8 +10,7 @@ import MainScreen from './screens/main';
 import SettingsScreen from './screens/settings';
 import {AppThemeContext} from './context/theme';
 import {createStackNavigator} from '@react-navigation/stack';
-import SearchScreen from './screens/search';
-import {Alert, Text} from 'react-native';
+import {Alert} from 'react-native';
 
 import {LoginScreen} from './screens/login';
 import {RegistrationScreen} from './screens/registration';
@@ -21,7 +20,6 @@ import {
   selectIsUserLoggedIn,
   selectUser,
 } from './redux/selectors/user';
-import {logout} from './redux/reducers/user';
 import {useAppDispatch} from './hooks/useAppDispatch';
 import {fetchBookmarksForUser} from './redux/modules/bookmark';
 import {ChangePasswordScreen} from './screens/changePassword';
@@ -29,6 +27,7 @@ import {UserDashboardScreen} from './screens/userDashboard';
 import {LocationLogsScreen} from './screens/locationLogs';
 import {LocationChooser} from './screens/locationChooser';
 import {initNotifications} from './utils';
+import {logoutUser} from './redux/modules/user';
 
 const Drawer = createDrawerNavigator();
 
@@ -46,8 +45,10 @@ const Navigation = () => {
   const isAdmin = useSelector(selectIsLoggedInUserAdmin);
 
   useEffect(() => {
-    initNotifications();
-  }, []);
+    if (isUserLoggedIn) {
+      initNotifications({username: userData?.username});
+    }
+  }, [isUserLoggedIn]);
 
   useEffect(() => {
     if (isUserLoggedIn) {
@@ -124,7 +125,7 @@ const Navigation = () => {
                             props.navigation.navigate('Auth', {
                               screen: 'Log in',
                             });
-                            dispatch(logout());
+                            dispatch(logoutUser());
                           },
                         },
                         {text: 'Cancel', style: 'cancel'},

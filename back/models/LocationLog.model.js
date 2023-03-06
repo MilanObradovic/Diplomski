@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const LocationLogSchema = new mongoose.Schema({
     locationName: {
@@ -11,6 +11,4 @@ const LocationLogSchema = new mongoose.Schema({
     }
 }, {collection: 'LocationLog'});
 
-const LocationLog = new mongoose.model('LocationLog', LocationLogSchema);
-
-module.exports = { LocationLog };
+export const LocationLog = new mongoose.model('LocationLog', LocationLogSchema);

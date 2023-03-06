@@ -7,6 +7,8 @@ import {
   patchPassword,
 } from '../api/user';
 import {createAsyncThunk} from '@reduxjs/toolkit';
+import {logout} from '../reducers/user';
+import {deleteFCMToken} from '../../utils';
 
 export const registerUser = createAsyncThunk<
   {data: User | string; status: number},
@@ -26,6 +28,15 @@ export const loginUser = createAsyncThunk<
   return {data, status};
 });
 
+export const logoutUser = createAsyncThunk<{}, undefined>(
+  'user/login',
+  async (a, {dispatch}) => {
+    // @ts-ignore
+    dispatch(logout());
+    deleteFCMToken();
+  },
+);
+
 export const changePassword = createAsyncThunk<
   Promise<{data: string | null; status: number}>,
   {username: string; oldPassword: string; newPassword: string}
@@ -43,7 +54,7 @@ export const fetchAllUsers = createAsyncThunk<
 
 export const disableUser = createAsyncThunk<
   {data: string; status: number},
-  {username: string, isActive: boolean}
+  {username: string; isActive: boolean}
 >('user/disableUser', async ({username, isActive}) => {
   return deactivateUser({username, isActive});
 });

@@ -1,12 +1,12 @@
 // Connection URI
 const databaseURI = "mongodb+srv://milansd61:sifrazadb@weather.defnhzb.mongodb.net/WeatherDB?retryWrites=true&w=majority";
 
-const mongoose = require('mongoose');
+import Mmongoose from 'mongoose';
 
-mongoose.Promise = global.Promise;
-mongoose.set('strictQuery', false);
+Mmongoose.Promise = global.Promise;
+Mmongoose.set('strictQuery', false);
 console.clear()
-mongoose.connect(databaseURI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+Mmongoose.connect(databaseURI, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
     console.group('Database');
     console.log('Successfully connected to the database');
     console.groupEnd()
@@ -17,10 +17,8 @@ mongoose.connect(databaseURI, { useNewUrlParser: true, useUnifiedTopology: true 
     console.groupEnd()
 });
 
+export const mongoose = Mmongoose;
 
-module.exports = {
-    mongoose
-};
 
 // const { MongoClient, ServerApiVersion } = require('mongodb');
 // const uri = "mongodb+srv://milansd61:sifrazadb@weather.defnhzb.mongodb.net/?retryWrites=true&w=majority";

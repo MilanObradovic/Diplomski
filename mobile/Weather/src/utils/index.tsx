@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import moment from 'moment';
 import {GeoPoint} from '../hooks/useUserLocation';
 import {Hourly, WeatherDescription} from '../types';
@@ -7,23 +7,27 @@ import React from 'react';
 import {store} from '../../App';
 import messaging from '@react-native-firebase/messaging';
 import notifee, {AndroidImportance} from '@notifee/react-native';
+import {sendFCMToken} from "../redux/api/user";
 
+export const NOTIFICATION_CHANNEL_ID = 'com.weather';
+export const NOTIFICATION_CHANNEL_NAME = 'Weather App';
+
+const createAndroidChannel = async () => {
+  await notifee.createChannel({
+    id: NOTIFICATION_CHANNEL_ID,
+    name: NOTIFICATION_CHANNEL_NAME,
+  });
+};
 async function onDisplayNotification({title, body}) {
   // Request permissions (required for iOS)
   await notifee.requestPermission();
-
-  // Create a channel (required for Android)
-  const channelId = await notifee.createChannel({
-    id: 'default',
-    name: 'Default Channel',
-  });
 
   // Display a notification
   await notifee.displayNotification({
     title,
     body,
     android: {
-      channelId,
+      channelId: NOTIFICATION_CHANNEL_ID,
       smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
       // pressAction is needed if you want the notification to open the app when pressed
       pressAction: {
@@ -34,12 +38,21 @@ async function onDisplayNotification({title, body}) {
   });
 }
 
-export const initNotifications = async () => {
+export const initNotifications = async ({username}: {username: string}) => {
+  if (!username) {
+    Alert.alert('Can not initialize notifications without username');
+    return;
+  }
   const authorizationStatus = await messaging().requestPermission();
+  createAndroidChannel();
 
   if (authorizationStatus === messaging.AuthorizationStatus.AUTHORIZED) {
     const token = await messaging().getToken();
-    console.log({token});
+    if (!token) {
+      Alert.alert('Can not initialize notifications without token');
+      return;
+    }
+    sendFCMToken({username, token});
     messaging().onMessage(n => {
       console.log({n});
       onDisplayNotification({
@@ -77,6 +90,8 @@ export async function get(url = '', data = {}) {
   const result = await response.json();
   return {data: result, status: response.status};
 }
+
+export const deleteFCMToken = () => messaging().deleteToken();
 
 export const isiOSPlatform = () => Platform.OS === 'ios';
 

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 // const mongoose = require('mongoose').set('debug', true);
-const randToken = require('rand-token');
+import randToken from 'rand-token';
 
 const UserSchema = new mongoose.Schema({
     username: {
@@ -34,9 +34,10 @@ const UserSchema = new mongoose.Schema({
     },
     apiAccessCounter: {
         type: Number,
+    },
+    fcmToken: {
+        type: String,
     }
 }, {collection: 'Users'});
 
-const User = new mongoose.model('User', UserSchema);
-
-module.exports = { User };
+export const User = new mongoose.model('User', UserSchema);

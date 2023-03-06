@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const BookmarkSchema = new mongoose.Schema({
     userId: {
@@ -19,6 +19,4 @@ const BookmarkSchema = new mongoose.Schema({
     }
 }, {collection: 'Bookmark'});
 
-const Bookmark = new mongoose.model('Bookmark', BookmarkSchema);
-
-module.exports = { Bookmark };
+export const Bookmark = new mongoose.model('Bookmark', BookmarkSchema);
