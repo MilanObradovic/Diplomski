@@ -28,21 +28,20 @@ const service = {
 firebaseAdmin.initializeApp({
     credential: firebaseAdmin.credential.cert(service)
 });
-const notification = {
-    notification: {
-        title: "Hey yo",
-        body: "Outside a shit storm"
-    }
+const notificationBuilder = (data, location) => {
+    return {notification: {
+        title: data?.headline,
+        body: `${location}, ${data?.event}`
+    }}
 };
 
 const fcmToken = 'e1U_QNUZSFuOLOAuYwPdYd:APA91bFzlB__OUXJ9y99E0dtxBGamGE-Ye8qJ2oR6xmVrfS26aB98la_pT3tqa3Q7zyPtOz9z2Yhb8yir_fyAFWi4U1rpkDi_up3alnvpTg1JxLMaUudEAB_e88a5uGAH9QlNP20sVRx'
-const sendNotification  =() => {
-    setTimeout(()=>{
-        firebaseAdmin.messaging().sendToDevice(fcmToken, notification).catch((e)=>{
-            console.log({e})
-        });
-    }, 5000)
-
+const sendNotification  =({fcmTokens, data, location}) => {
+    data.alert.forEach((alert)=> {
+        firebaseAdmin.messaging().sendToDevice(fcmTokens, notificationBuilder(alert, location)).catch((e) => {
+                console.log({e})
+        })
+    })
 }
 const API_KEY = '0b6420634b864682946211718232102';
 
@@ -72,17 +71,23 @@ const job = new CronJob('0/10 * * * * *',  async function  () {
         }
     }
     for(let i=0; i<bookmarks.length; i++){
-        const response = await fetch(requestUrl(bookmarks[i].locationName));
-        const data = await response.json();
-        const {alerts} = data.data;
-        // const response = await fetch(,{
-        //     method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        // } )
-        if(alerts){
-            alertsByLocation[bookmarks[i].locationName] = alerts;
+        try{
+            const response = await fetch(requestUrl(bookmarks[i].locationName));
+            const data = await response.json();
+            const {alerts} = data.data;
+            if(alerts){
+                alertsByLocation[bookmarks[i].locationName] = alerts;
+            }
+        }catch (e) {
+            console.log({e})
         }
+
     }
-    console.log({alertsByLocation})
+    Object.keys(alertsByLocation).forEach(location=>{
+        if(alertsByLocation[location].alert.length > 0 && fcmTokensByLocation[location] && fcmTokensByLocation[location].length > 0){
+            sendNotification({fcmTokens: fcmTokensByLocation[location], data: alertsByLocation[location], location})
+        }
+    })
 })
 job.start();
 
@@ -170,9 +175,7 @@ app.post('/user', (req, res) => {
         case 'registration': {
             let newUser = req.body.data;
             let {username} = newUser;
-            console.log({username})
             User.findOne({username: username}).then((user) => {
-                console.log({user})
                 if (user) {
                     res.status(404).json("Try another username.");
                 } else {
@@ -222,8 +225,6 @@ app.post('/user', (req, res) => {
             if(!username || !token){
                 res.status(400).json("Username/Token must be specified!")
             }
-            console.log({username})
-            console.log({token})
             User.findOneAndUpdate({username: username}, {fcmToken: token}).then(() => {
                 res.status(200).json("User is successfully updated!");
             }).catch((e)=>{

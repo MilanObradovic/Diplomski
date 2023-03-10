@@ -472,7 +472,7 @@ function MainScreen({navigation}: Props) {
             fontWeight: 'bold',
             fontSize: theme.fontSize.lg,
           }}>
-          {openedAlert?.headline}
+          {openedAlert?.event}
         </Text>
         {renderFullAlertProperty('Instructions', openedAlert?.instruction)}
         {renderFullAlertProperty(

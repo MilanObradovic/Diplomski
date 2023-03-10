@@ -7,7 +7,7 @@ import React from 'react';
 import {store} from '../../App';
 import messaging from '@react-native-firebase/messaging';
 import notifee, {AndroidImportance} from '@notifee/react-native';
-import {sendFCMToken} from "../redux/api/user";
+import {sendFCMToken} from '../redux/api/user';
 
 export const NOTIFICATION_CHANNEL_ID = 'com.weather';
 export const NOTIFICATION_CHANNEL_NAME = 'Weather App';

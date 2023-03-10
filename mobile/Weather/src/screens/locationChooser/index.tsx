@@ -176,8 +176,8 @@ export const LocationChooser = props => {
             isOutlined={false}
             text={'a'}
             onPress={() => {
-              // bottomSheetRef?.current.open();
-                    sendNot();
+              bottomSheetRef?.current.open();
+              //       sendNot();
 
             }}
             icon={faSearch}

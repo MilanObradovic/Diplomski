@@ -1,13 +1,7 @@
 import React, {useContext} from 'react';
 import {useSelector} from 'react-redux';
 import {selectAlerts} from '../../redux/selectors/alerts';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Alert} from '../../types';
 import {AppThemeContext} from '../../context/theme';
 import {getRGBFromHexWithOpacity} from '../../utils';
@@ -47,6 +41,16 @@ export const AlertComponent = ({
         style={{color: theme.textColor, paddingBottom: 8, fontWeight: 'bold'}}>
         {item?.headline}
       </Text>
+      {item?.event && (
+        <Text
+          style={{
+            color: theme.textColor,
+            paddingBottom: 8,
+            fontWeight: 'bold',
+          }}>
+          {item?.event}
+        </Text>
+      )}
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <Text style={{color: theme.textColor, flex: 1}} numberOfLines={2}>
           {item?.desc}
