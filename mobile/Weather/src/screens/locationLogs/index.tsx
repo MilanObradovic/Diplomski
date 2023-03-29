@@ -20,10 +20,6 @@ export const LocationLogsScreen = ({navigation}) => {
   const {theme} = useContext(AppThemeContext);
   const dispatch = useAppDispatch();
 
-  console.log('******************************');
-  console.log({locationLogs});
-  console.log('******************************');
-
   useEffect(() => {
     dispatch(fetchLocationLogs());
   }, []);
@@ -33,9 +29,6 @@ export const LocationLogsScreen = ({navigation}) => {
   };
 
   const renderUserCell = ({item}: {item: LocationLog}) => {
-    console.log('******************************');
-    console.log({item});
-    console.log('******************************');
     return (
       <View>
         <View style={styles.container}>

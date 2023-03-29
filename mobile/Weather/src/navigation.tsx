@@ -136,7 +136,8 @@ const Navigation = () => {
               )}
             </DrawerContentScrollView>
           );
-        }}>
+        }}
+      >
         <Drawer.Screen
           options={{
             headerStyle,
