@@ -1,16 +1,17 @@
 // Connection URI
-import mongoose from 'mongoose';
+import mong from 'mongoose';
 
 const databaseURI =
   'mongodb+srv://milansd61:sifrazadb@weather.defnhzb.mongodb.net/WeatherDB?retryWrites=true&w=majority';
 
-mongoose.Promise = global.Promise;
-mongoose.set('strictQuery', false);
+mong.Promise = global.Promise;
+mong.set('strictQuery', false);
 console.clear();
-mongoose.connect(databaseURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mong
+  .connect(databaseURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.group('Database');
     console.log('Successfully connected to the database');
@@ -22,4 +23,4 @@ mongoose.connect(databaseURI, {
     console.groupEnd();
   });
 
-export const mongoose = Mmongoose;
+export const mongoose = mong;
