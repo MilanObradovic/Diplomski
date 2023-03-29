@@ -6,7 +6,6 @@ import alertNotificationCron from './src/crons/alertNotificaition.js';
 import {corsEnabler, apiRestriction, apiAccessLogger} from './src/middlewares.js';
 
 const app = express()
-import fetch from 'node-fetch';
 import {initializeFirebase, sendNotification} from './src/firebase.js';
 
 // parse application/x-www-form-urlencoded
@@ -155,6 +154,7 @@ app.post('/bookmark', (req, res)=>{
             break;
     }
 })
+
 app.post('/locationLog', (req, res)=>{
         const {locationName} = req.body.data
         LocationLog.findOne({locationName}).then((location)=>{
