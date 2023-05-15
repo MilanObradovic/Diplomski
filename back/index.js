@@ -4,21 +4,23 @@ import {mongoose} from './src/mongoose.js';
 import {User, Bookmark, LocationLog} from './src/models/index.js';
 import alertNotificationCron from './src/crons/alertNotificaition.js';
 import {corsEnabler, apiRestriction, apiAccessLogger} from './src/middlewares.js';
+import {initializeFirebase, sendNotification} from './src/firebase.js';
 
 const app = express()
-import {initializeFirebase, sendNotification} from './src/firebase.js';
+
+// ADDING MIDDLEWARES
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
     extended: true
 }))
-
 // parse application/json
 app.use(bodyParser.json())
-
-//adding middlewares
+// enable CORS
 app.use(corsEnabler);
+// restrict API for disabled users
 app.use(apiRestriction);
+// log API access
 app.use(apiAccessLogger);
 
 //initial Firebase in order for notifications to work
@@ -186,7 +188,6 @@ app.get('/bookmark/:id', (req, res)=>{
 })
 
 const  populateApiAccessCounter =  () => {
-
     User.find().then((users)=>{
         users.forEach(async user=>{
             const a = await User.findOneAndUpdate({username: user.username}, { apiAccessCounter: Math.round(Math.random()*100)})
@@ -197,10 +198,8 @@ app.listen(3000, () => {
     console.group('Node server')
     console.log('Server is listening on port 3000');
     console.groupEnd()
-    // populateApiAccessCounter();
 })
 app.on('exit', () =>{
     console.log('zatvaram mongodb konekciju')
     mongoose.connection.close()
-    // mongoDB.close()
 })

@@ -4,17 +4,18 @@ import {Bookmark, User} from '../models/index.js';
 import {sendNotification} from '../firebase.js';
 
 const EVERY_TEN_SECONDS = '0/10 * * * * *';
+const EVERY_DAY_AT_9_AM = '0 0 9 * * *';
 const EVERY_HOUR = '0 0 * * * * *';
 // CRON JOB
 
-const API_KEY = '1cc71b582fce4288bc0171542232503';
+const API_KEY = 'bc1c4c5eaa7b4e0985a161032230705';
 
 const BASE_WEATHER_URL = `https://api.worldweatheronline.com/premium/v1/weather.ashx?key=${API_KEY}&format=json&num_of_days=14`;
 
 const requestUrl = placeForSearch =>
   `${BASE_WEATHER_URL}&q=${placeForSearch}&tp=1&alerts=yes`;
 
-export default new CronJob(EVERY_TEN_SECONDS, async () => {
+export default new CronJob(EVERY_DAY_AT_9_AM, async () => {
   const fcmTokensByLocation = {};
   const alertsByLocation = {};
   const bookmarks = await Bookmark.find({});

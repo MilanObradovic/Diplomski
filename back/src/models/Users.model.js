@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-// const mongoose = require('mongoose').set('debug', true);
 import randToken from 'rand-token';
 
 const UserSchema = new mongoose.Schema(

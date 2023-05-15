@@ -28,8 +28,7 @@ async function onDisplayNotification({title, body}) {
     body,
     android: {
       channelId: NOTIFICATION_CHANNEL_ID,
-      smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
-      // pressAction is needed if you want the notification to open the app when pressed
+      smallIcon: 'ic_launcher',
       pressAction: {
         id: 'default',
       },
@@ -54,7 +53,6 @@ export const initNotifications = async ({username}: {username: string}) => {
     }
     sendFCMToken({username, token});
     messaging().onMessage(n => {
-      console.log({n});
       onDisplayNotification({
         title: n.notification?.title,
         body: n.notification?.body,
@@ -529,3 +527,5 @@ export const resolveUVIndex = (value: number) => {
     return 'Very high';
   }
 };
+
+export const localhost = isiOSPlatform() ? 'localhost' : '10.0.2.2';

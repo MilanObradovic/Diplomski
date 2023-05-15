@@ -1,4 +1,3 @@
-// Connection URI
 import mong from 'mongoose';
 
 const databaseURI =

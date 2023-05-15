@@ -1,7 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {User} from '../../../types';
 import {changePassword, loginUser, registerUser} from '../../modules/user';
-import {selectSignuperrorMessage} from '../../selectors/user';
 
 export interface UserReducerType {
   user: User | null;

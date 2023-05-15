@@ -1,11 +1,11 @@
-import {get, post} from '../../utils';
+import {get, post, localhost} from '../../utils';
 
 export const createBookmark = (data: {
   userId: string;
   locationName: string;
   q: string;
 }) => {
-  return post('http://10.0.2.2:3000/bookmark', {
+  return post(`http://${localhost}:3000/bookmark`, {
     action: 'create',
     data,
   });
@@ -15,16 +15,16 @@ export const deleteBookmark = (data: {
   userId: string;
   locationName: string;
 }) => {
-  return post('http://10.0.2.2:3000/bookmark', {
+  return post(`http://${localhost}:3000/bookmark`, {
     action: 'delete',
     data,
   });
 };
 
 export const getBookmarksForUser = (userId: string) => {
-  return get(`http://10.0.2.2:3000/bookmark/${userId}`);
+  return get(`http://${localhost}:3000/bookmark/${userId}`);
 };
 
 export const sendNot = () => {
-  return get(`http://10.0.2.2:3000/notification`);
+  return get(`http://${localhost}:3000/notification`);
 };

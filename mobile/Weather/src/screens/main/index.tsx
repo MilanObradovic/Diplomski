@@ -510,14 +510,14 @@ function MainScreen({navigation}: Props) {
     <ScreenWrapper navigation={navigation}>
       <ScrollView contentContainerStyle={styles.scrollViewContainer}>
         {!isWeatherInitializing && renderHeader()}
-        {!isWeatherInitializing && (
-          <AlertComponent
-            onAlertPress={item => {
-              alertBottomSheetRef?.current?.open();
-              setOpenedAlert(item);
-            }}
-          />
-        )}
+        {/*{!isWeatherInitializing && (*/}
+        {/*  <AlertComponent*/}
+        {/*    onAlertPress={item => {*/}
+        {/*      alertBottomSheetRef?.current?.open();*/}
+        {/*      setOpenedAlert(item);*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*)}*/}
         {!isWeatherInitializing && renderWeather()}
         {!isWeatherInitializing && renderLineChart()}
         <View style={{padding: 16}}>
